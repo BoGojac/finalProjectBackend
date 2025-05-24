@@ -12,7 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('constituencies', function (Blueprint $table) {
-            $table->id();
+            $table->id('constituency_id');
+            $table->string('name');
+            $table->string('region');
+            $table->decimal('longitude', 11, 8);
+            $table->decimal('latitude', 10, 8);
             $table->timestamps();
         });
     }

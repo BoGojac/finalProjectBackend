@@ -12,7 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('polling_station_staffs', function (Blueprint $table) {
-            $table->id();
+            $table->id('polling_station_staff');
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('polling_station_id');
+            $table->string('first_name');
+            $table->string('middle_name');
+            $table->string('last_name');
+            $table->enum('gender',['male', 'female']);
             $table->timestamps();
         });
     }

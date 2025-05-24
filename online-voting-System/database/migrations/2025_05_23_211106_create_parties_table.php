@@ -12,7 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('parties', function (Blueprint $table) {
-            $table->id();
+            $table->id('parties_id');
+            $table->string('name');
+            $table->string('abbrevation');
+            $table->string('leader');
+            $table->date('foundation_year');
+            $table->string('partcipation_area');
             $table->timestamps();
         });
     }

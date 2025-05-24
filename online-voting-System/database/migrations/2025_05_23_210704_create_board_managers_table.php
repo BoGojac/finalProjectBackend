@@ -12,7 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('board_managers', function (Blueprint $table) {
-            $table->id();
+            $table->id('board_managers_id');
+            $table->unsignedBigInteger('user_id');
+            $table->string('first_name');
+            $table->string('middle_name');
+            $table->string('last_name');
+            $table->enum('gender',['male', 'female']);
             $table->timestamps();
         });
     }
