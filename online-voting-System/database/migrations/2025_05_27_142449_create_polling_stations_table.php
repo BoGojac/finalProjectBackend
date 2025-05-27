@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('polling_stations', function (Blueprint $table) {
             $table->id();
-             $table->unsignedBigInteger('constituencies_id');
+            $table->foreignId('constituencies_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('region');
             $table->decimal('longitude', 11, 8);
