@@ -11,19 +11,19 @@ class AuthController extends Controller
 {
     public function register(Request $request){
         $request->validate([
-            'username' => 'required|string',
-            'password' => 'required|comfirmed|string',
-            'phone_number' => 'string',
+            'username' => 'required|string|unique:users,username',
+            'password' => 'required|string|min:8|confirmed',
+            'phone_number' => 'required|string', // ensure it’s provided
             'role' => 'required|string',
-            'email' => "required|email",
+            'email' => 'required|email|unique:users,email',
         ]);
         
         $user = User::create([
             'username' => $request->username,
-            'password' => Hash::make($request->password),
+            'password' => bcrypt($request->password),
             'phone_number' => $request->phone_number,
             'role' => $request->role,
-            'email' => $request->email,
+            'email' => $request->email
         ]);
 
         return response()->json([
@@ -48,12 +48,21 @@ class AuthController extends Controller
         return response()->json([
             'message'       => 'Login success',
             'access_token'  => $token,
-            'token_type'    => 'Bearer'
         ]);
         
     }
 
-    public function logout(){
+    public function logout(Request $request){
+         /** @var User $user */
+            $user = $request->user();
 
+            // Use delete on the token relationship
+            $user->tokens->each(function ($token) {
+                $token->delete();
+            });
+
+            return response()->json([
+                 'message' => 'Logout success',
+            ]);
     }
 }
