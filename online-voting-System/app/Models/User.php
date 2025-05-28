@@ -48,4 +48,28 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function admin(){
+        return $this->hasOne(Admin::class);
+    }
+
+    public function boardmanagers(){
+        return $this->hasOne(BoardManager::class);
+    }
+
+    public function constituencyStaffs(){
+        return $this->hasOne(ConstituencyStaff::class);
+    }
+
+    public function pollingStationStaffs(){
+        return $this->hasOne(PollingStationStaff::class);
+    }
+
+    public function candidates(){
+        return $this->hasOne(Candidate::class);
+    }
+
+    public function voters(){
+        return $this->hasOne(Voter::class);
+    }
 }
