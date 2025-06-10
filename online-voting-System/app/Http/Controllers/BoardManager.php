@@ -123,6 +123,9 @@ class BoardManager extends Controller
 
     public function overRideVoting(Request $request)
     {
+        $request->validate([
+            
+        ]);
 
     }
 }
