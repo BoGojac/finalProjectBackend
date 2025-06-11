@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('constituencies', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('region');
+            $table->foreignId('region_id')->constrained()->onDelete('cascade');
             $table->decimal('longitude', 11, 8);
             $table->decimal('latitude', 10, 8);
             $table->timestamps();

@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('polling_station_id')->constrained()->onDelete('cascade');
-
             $table->string('first_name');
             $table->string('middle_name');
             $table->string('last_name');

@@ -11,15 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('parties', function (Blueprint $table) {
+        Schema::create('regions', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('abbrevation');
-            $table->string('leader');
-            $table->date('foundation_year');
-            $table->enum('participation_area', ['national', 'regional']);
-            $table->foreignId('region_id')->constrained()->onDelete('cascade');
-            $table->string('image');
             $table->timestamps();
         });
     }
@@ -29,6 +24,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('parties');
+        Schema::dropIfExists('regions');
     }
 };
+
+
+
+
+
+

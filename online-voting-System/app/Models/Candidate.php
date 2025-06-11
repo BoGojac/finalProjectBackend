@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Candidate extends Model
 {
     protected $fillable=[
+        'user_id',
+        'party_id',
         'first_name',
         'middle_name',
         'last_name',
@@ -24,6 +26,12 @@ class Candidate extends Model
     }
 
     public function party(){
-        return $this->belongsTo(Party::class);
+        return $this->belongsTo(Party::class, 'parties_id');
+    }
+
+    // Access region through the party
+    public function region()
+    {
+        return $this->party ? $this->party->region : null;
     }
 }

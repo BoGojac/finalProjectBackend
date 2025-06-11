@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Constituency;
 use App\Models\PollingStation;
+use App\Models\Region;
 use App\Models\VotingDate;
 use Illuminate\Http\Request;
 use App\Models\RegistrationTimeSpan;
@@ -15,25 +16,53 @@ class BoardManager extends Controller
 
     }
 
+    public function registerRegion(Request $request)
+    {
+        $request->validate([
+        'name' => 'required|string',
+        'abbrevation' => 'required|string',
+        ]);
+
+        $region = Region::create([
+            'name' => $request->name,
+            'abbrevation' => $request->abbrevation,
+        ]);
+
+         return response()->json([
+            'message' => 'region registered created successfully',
+            'region' => $region,
+        ], 201);
+
+    }
+
+
     public function createConstituency(Request $request)
     {
         $request->validate([
             'name' => 'required|string',
             'longitude' => 'required|numeric|decimal:8',
             'latitude' => 'required|numeric|decimal:8',
-            'region' => 'required|string',
+            'region_abbrevation' => 'required|string',
         ]);
+
+        $region = Region::where('abbrevation', $request->region_abbrevation)->first();
+
+        if (!$region) {
+            return response()->json([
+                'message' => 'constituency with the given constituency name not found.'
+            ], 404);
+        }
 
         $constituency = Constituency::create([
             'name' => $request->name,
             'longitude' => $request->longitude,
             'latitude' => $request->latitude,
-            'region' => $request->region,
+            'region_id' => $region->id,
         ]);
 
          return response()->json([
             'message' => 'constituency created successfully',
-            'user' => $constituency,
+            'constituency' => $constituency,
         ], 201);
     }
 
@@ -44,7 +73,6 @@ class BoardManager extends Controller
             'name' => 'required|string',
             'longitude' => 'required|numeric|decimal:8',
             'latitude' => 'required|numeric|decimal:8',
-            'region' => 'required|string',
         ]);
 
         $constituencyName = Constituency::where('name', $request->constituency_name)->first();
@@ -59,12 +87,11 @@ class BoardManager extends Controller
             'name' => $request->name,
             'longitude' => $request->longitude,
             'latitude' => $request->latitude,
-            'region' => $request->region,
         ]);
 
          return response()->json([
             'message' => 'pollingstation created successfully',
-            'user' => $pollingstation,
+            'pollingStation' => $pollingstation,
         ], 201);
 
     }
@@ -83,7 +110,7 @@ class BoardManager extends Controller
 
          return response()->json([
             'message' => 'voting date setted successfully',
-            'user' => $votingdate,
+            'votingDate' => $votingdate,
         ], 201);
 
     }
@@ -120,11 +147,16 @@ class BoardManager extends Controller
         ], 201);
     }
 
+    public function registerParties(Request $request)
+    {
+
+    }
+
 
     public function overRideVoting(Request $request)
     {
         $request->validate([
-            
+
         ]);
 
     }
