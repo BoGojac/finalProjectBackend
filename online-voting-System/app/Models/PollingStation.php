@@ -11,6 +11,7 @@ class PollingStation extends Model
         'name',
         'longitude',
         'latitude',
+         // 'status',
     ];
 
     // A polling station has many polling station staff

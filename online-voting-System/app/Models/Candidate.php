@@ -18,6 +18,7 @@ class Candidate extends Model
         'disability',
         'duration_of_residence',
         'home_number',
+         // 'status',
         'image',
     ];
 

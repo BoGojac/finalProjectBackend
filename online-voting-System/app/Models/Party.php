@@ -13,6 +13,7 @@ class Party extends Model
         'foundation_year',
         'participation_area',
         'region_id',
+         // 'status',
         'image',
     ];
 

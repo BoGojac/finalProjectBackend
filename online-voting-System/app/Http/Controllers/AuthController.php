@@ -13,11 +13,12 @@ class AuthController extends Controller
         $request->validate([
             'username' => 'required|string|unique:users,username',
             'password' => 'required|string|min:8|confirmed',
-            'phone_number' => 'required|string', // ensure it’s provided
+            'phone_number' => 'required|string', 
             'role' => 'required|string',
+            // 'status' => 'required|in:active,inactive',
             'email' => 'required|email|unique:users,email',
         ]);
-        
+
         $user = User::create([
             'username' => $request->username,
             'password' => bcrypt($request->password),
@@ -49,7 +50,7 @@ class AuthController extends Controller
             'message'       => 'Login success',
             'access_token'  => $token,
         ]);
-        
+
     }
 
     public function logout(Request $request){

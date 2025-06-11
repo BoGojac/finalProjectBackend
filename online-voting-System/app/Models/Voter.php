@@ -17,6 +17,7 @@ class Voter extends Model
         'disability',
         'duration_of_residence',
         'home_number',
+         // 'status',
     ];
 
     public function user(){

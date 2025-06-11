@@ -11,6 +11,7 @@ class Constituency extends Model
         'longitude',
         'latitude',
         'region_id',
+        // 'status',
     ];
 
     public function pollingStations()

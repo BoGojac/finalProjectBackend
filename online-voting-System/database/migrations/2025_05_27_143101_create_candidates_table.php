@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('disability')->nullable();
             $table->string('duration_of_residence');
             $table->string('home_number');
+            // $table->enum('status', ['active', 'inactive'])->default('active');
             $table->string('image');
             $table->timestamps();
         });
