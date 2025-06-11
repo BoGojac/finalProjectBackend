@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Constituency;
+use App\Models\Party;
 use App\Models\PollingStation;
 use App\Models\Region;
 use App\Models\VotingDate;
@@ -79,7 +80,7 @@ class BoardManagerController extends Controller
 
         if (!$constituencyName) {
             return response()->json([
-                'message' => 'constituency with the given constituency name not found.'
+                'message' => 'region with the given region abbrevation name not found.'
             ], 404);
         }
         $pollingstation = PollingStation::create([
@@ -149,8 +150,47 @@ class BoardManagerController extends Controller
 
     public function registerParties(Request $request)
     {
+        $request->validate([
+            'name' => 'required|string',
+            'abbrevation' => 'required|string',
+            'leader' => 'required|string',
+            'foundation_year' => 'required|date',
+            'participation_area' => 'required|in:national,regional',
+            'region_abbrevation' => 'string|nullable',
+            'image' => 'nullable',
+        ]);
 
+        $regionId = null;
+
+        if ($request->participation_area === 'regional') {
+            // Lookup region only if participation_area is regional
+            $region = Region::where('abbrevation', $request->region_abbrevation)->first();
+
+            if (!$region) {
+                return response()->json([
+                    'message' => 'Region with the given abbreviation not found.'
+                ], 404);
+            }
+
+            $regionId = $region->id;
+        }
+
+        $party = Party::create([
+            'name' => $request->name,
+            'abbrevation' => $request->abbrevation,
+            'leader' => $request->leader,
+            'foundation_year' => $request->foundation_year,
+            'participation_area' => $request->participation_area,
+            'region_id' => $regionId,
+            'image' => $request->image,
+        ]);
+
+        return response()->json([
+            'message' => 'Party registered successfully',
+            'party' => $party,
+        ], 201);
     }
+
 
 
     public function overRideVoting(Request $request)

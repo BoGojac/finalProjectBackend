@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('leader');
             $table->date('foundation_year');
             $table->enum('participation_area', ['national', 'regional']);
-            $table->foreignId('region_id')->constrained()->onDelete('cascade');
+            $table->foreignId('region_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('image');
             $table->timestamps();
         });
