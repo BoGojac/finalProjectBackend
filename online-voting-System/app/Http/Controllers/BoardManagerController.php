@@ -9,7 +9,7 @@ use App\Models\VotingDate;
 use Illuminate\Http\Request;
 use App\Models\RegistrationTimeSpan;
 
-class BoardManager extends Controller
+class BoardManagerController extends Controller
 {
     public function boardManagersData(Request $request)
     {
