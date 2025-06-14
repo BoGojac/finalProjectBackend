@@ -9,6 +9,7 @@ class Candidate extends Model
     protected $fillable=[
         'user_id',
         'party_id',
+        'constituency_id',
         'first_name',
         'middle_name',
         'last_name',
@@ -18,7 +19,6 @@ class Candidate extends Model
         'disability',
         'duration_of_residence',
         'home_number',
-         // 'status',
         'image',
     ];
 
@@ -27,7 +27,11 @@ class Candidate extends Model
     }
 
     public function party(){
-        return $this->belongsTo(Party::class, 'parties_id');
+        return $this->belongsTo(Party::class);
+    }
+
+    public function constituency(){
+        return $this->belongsTo(Constituency::class);
     }
 
     // Access region through the party

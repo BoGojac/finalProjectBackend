@@ -2,22 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BoardManager;
-use App\Models\User;
+use App\Models\Voter;
 use Illuminate\Http\Request;
 
-class BoardManagerController extends Controller
+class VoterController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $boardmanager = BoardManager::all();
-        return response()->json([
-            'message' => 'information of board managers',
-            'data' => $boardmanager,
-        ]);
+        //
     }
 
     /**
@@ -25,26 +20,39 @@ class BoardManagerController extends Controller
      */
     public function store(Request $request)
     {
-       $request->validate([
+        $request->validate([
             'user_id' => 'required|exists:Users,id',
+            'polling_station_id' => 'required|exists:PollingStations,id',
             'first_name' => 'required|string',
             'middle_name' => 'required|string',
             'last_name' => 'required|string',
             'gender' => 'required|in:male,female',
+            'registration_date' => 'required|date',
+            'birth_date' => 'required|date',
+            'disability' => 'required|string',
+            'duration_of_residence' => 'required|string',
+            'home_number' => 'required|string',
         ]);
 
 
-        $boardmanager = BoardManager::create([
+
+        $voter = Voter::create([
             'user_id' => $request->user_id,
+            'polling_station_id' => $request->polling_station_id,
             'first_name' => $request->first_name,
             'middle_name' => $request->middle_name,
             'last_name' => $request->last_name,
             'gender' => $request->gender,
+            'registration_date' =>  $request->registration_date,
+            'birth_date' =>  $request->birth_date,
+            'disability' =>  $request->disability,
+            'duration_of_residence' =>  $request->duration_of_residence,
+            'home_number' =>  $request->home_number,
         ]);
 
          return response()->json([
-            'message' => 'boardmanager created successfully',
-            'boardmanager' => $boardmanager,
+            'message' => 'voter registered successfully',
+            'data' => $voter,
         ], 201);
     }
 
@@ -61,18 +69,7 @@ class BoardManagerController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $boardmanager = BoardManager:: find($id);
-
-        if (!$boardmanager) {
-            return response()->json(['message' => 'Boardmanager not found.'], 404);
-        }
-
-        $boardmanager->update($request->all());
-
-        return response()->json([
-            'message' => 'boardmanger information updated successfully',
-            'data' => $boardmanager,
-        ], 201);
+        //
     }
 
     /**
@@ -80,15 +77,6 @@ class BoardManagerController extends Controller
      */
     public function destroy(string $id)
     {
-        $boardmanager = BoardManager::find($id);
-
-        if (!$boardmanager) {
-            return response()->json(['message' => 'BoardManager not found.'], 404);
-        }
-
-        // Delete the party
-        $boardmanager->delete();
-
-        return response()->json(['message' => 'Boardmanager deleted successfully.']);
+        //
     }
 }

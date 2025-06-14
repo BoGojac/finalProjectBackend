@@ -11,7 +11,7 @@ class Constituency extends Model
         'longitude',
         'latitude',
         'region_id',
-        // 'status',
+        'status',
     ];
 
     public function pollingStations()
@@ -22,6 +22,11 @@ class Constituency extends Model
     public function constituencyStaffs()
     {
         return $this->hasMany(ConstituencyStaff::class);
+    }
+
+    public function candidates()
+    {
+        return $this->hasMany(Candidate::class);
     }
 
     public function region()

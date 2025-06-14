@@ -8,6 +8,7 @@ class Voter extends Model
 {
     protected $fillable=[
         'user_id',
+        'polling_station_id',
         'first_name',
         'middle_name',
         'last_name',
@@ -17,7 +18,6 @@ class Voter extends Model
         'disability',
         'duration_of_residence',
         'home_number',
-         // 'status',
     ];
 
     public function user(){

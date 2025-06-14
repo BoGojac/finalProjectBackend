@@ -1,55 +1,122 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BoardManagerController;
+use App\Http\Controllers\CandidateController;
+use App\Http\Controllers\ConstituencyController;
+use App\Http\Controllers\ConstituencyStaffController;
+use App\Http\Controllers\PartyController;
+use App\Http\Controllers\PollingStationController;
+use App\Http\Controllers\PollingStationStaffController;
+use App\Http\Controllers\RegionController;
+use App\Http\Controllers\RegistrationTimeSpanController;
+use App\Http\Controllers\VoterController;
+use App\Http\Controllers\VotingDateController;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+
+/** User End Point */
 
 Route::post('/login', [AuthController::class, 'login']);
-Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
-Route::middleware('auth:sanctum')->post('/userregister', [AuthController::class, 'register']);
-Route::middleware('auth:sanctum')->post('/boardmanagersdata', [BoardManagerController::class, 'boardManagersData']);
+
+Route::middleware('auth:sanctum')->group( function () {
+
+    /** User End Point */
+Route::post('/logout', [AuthController::class, 'logout']);
+Route::post('/userregister', [AuthController::class, 'register']);
+Route::get('/user', [AuthController::class, 'getUser']);
 
 
-Route::middleware('auth:sanctum')->post('/registerregion', [BoardManagerController::class, 'registerRegion']);
-Route::get('/regions', [BoardManagerController::class, 'getRegisteredRegions']);
-Route::middleware('auth:sanctum')->put('/region/{id}', [BoardManagerController::class, 'updateRegisteredRegions']);
-Route::middleware('auth:sanctum')->delete('/region/{id}', [BoardManagerController::class, 'deleteRegisteredRegions']);
+/** Admin End Point */
+
+Route::get('/admin', [AdminController::class, 'index']);
+Route::post('/admin',[AdminController::class, 'store']);
+Route::put('/admin/{id}', [AdminController::class, 'update']);
+Route::delete('/admin/{id}', [AdminController::class, 'destroy']);
+
+/** Board Manager End Point */
+Route::get('/boardmanagers', [BoardManagerController::class, 'index']);
+Route::post('/boardmanagers',[BoardManagerController::class, 'store']);
+Route::put('/boardmanagers/{id}', [BoardManagerController::class, 'update']);
+Route::delete('/boardmanagers/{id}', [BoardManagerController::class, 'destroy']);
+
+/** Constituency Staff End Point */
+Route::get('/constituencystaff', [ConstituencyStaffController::class, 'index']);
+Route::post('/constituencystaff',[ConstituencyStaffController::class, 'store']);
+Route::put('/constituencystaff/{id}', [ConstituencyStaffController::class, 'update']);
+Route::delete('/constituencystaff/{id}', [ConstituencyStaffController::class, 'destroy']);
 
 
-Route::middleware('auth:sanctum')->post('/partyregistration', [BoardManagerController::class, 'registerParties']);
-Route::get('/parties', [BoardManagerController::class, 'getParty']);
-Route::middleware('auth:sanctum')->put('/party/{id}', [BoardManagerController::class, 'updateParty']);
-Route::middleware('auth:sanctum')->patch('/party/status/{id}', [BoardManagerController::class, 'partyStatus']);
-Route::middleware('auth:sanctum')->delete('/party/{id}', [BoardManagerController::class, 'deleteParty']);
+/** Polling Station Staff End Point */
+Route::get('/pollingstationstaff', [PollingStationStaffController::class, 'index']);
+Route::post('/pollingstationstaff',[PollingStationStaffController::class, 'store']);
+Route::put('/pollingstationstaff/{id}', [PollingStationStaffController::class, 'update']);
+Route::delete('/pollingstationstaff/{id}', [PollingStationStaffController::class, 'destroy']);
+
+/** Region End Point */
+Route::post('/regions', [RegionController::class, 'store']);
+Route::get('/regions', [RegionController::class, 'index']);
+Route::put('/regions/{id}', [RegionController::class, 'update']);
+Route::delete('/regions/{id}', [RegionController::class, 'destroy']);
 
 
-Route::middleware('auth:sanctum')->post('/createconstituency', [BoardManagerController::class, 'createConstituency']);
-Route::get('/get-constituencies', [BoardManagerController::class, 'getConstituency']);
-Route::middleware('auth:sanctum')->put('/update-constituency/{id}', [BoardManagerController::class, 'updateConstituency']);
-Route::middleware('auth:sanctum')->delete('/delete-constituency/{id}', [BoardManagerController::class, 'deleteConstituency']);
+/** constituency end points */
+Route::get('/constituency', [ConstituencyController::class, 'index']);
+Route::post('/constituency',[ConstituencyController::class, 'store']);
+Route::put('/constituency/{id}', [ConstituencyController::class, 'update']);
+Route::delete('/constituency/{id}', [ConstituencyController::class, 'destroy']);
+Route::patch('/constituency/status/{id}', [ConstituencyController::class, 'constituencyStatus']);
+
+/** Polling Station End Point */
+
+Route::post('/pollingstation', [PollingStationController::class, 'store']);
+Route::get('/pollingstation', [PollingStationController::class, 'index']);
+Route::put('/pollingstation/{id}', [PollingStationController::class, 'update']);
+Route::delete('/pollingstation/{id}', [PollingStationController::class, 'destroy']);
+Route::patch('/pollingstation/status/{id}', [PollingStationController::class, 'pollingStationStatus']);
+
+/** Party End Point */
+Route::post('/partyregistration', [PartyController::class, 'store']);
+Route::get('/parties', [PartyController::class, 'index']);
+Route::put('/party/{id}', [PartyController::class, 'update']);
+Route::delete('/party/{id}', [PartyController::class, 'destroy']);
+Route::patch('/party/status/{id}', [PartyController::class, 'partyStatus']);
 
 
-Route::middleware('auth:sanctum')->post('/createpollingstation', [BoardManagerController::class, 'createPollingStation']);
-Route::get('/get-polling-stations', [BoardManagerController::class, 'getPollingStation']);
-Route::middleware('auth:sanctum')->put('/update-polling-station/{id}', [BoardManagerController::class, 'updatePollingStation']);
-Route::middleware('auth:sanctum')->delete('/delete-polling-station/{id}', [BoardManagerController::class, 'deletePollingStation']);
+/** Candidate End Point */
+
+Route::get('/candidate', [CandidateController::class, 'index']);
+Route::post('/candidate',[CandidateController::class, 'store']);
+Route::put('/candidate/{id}', [CandidateController::class, 'update']);
+Route::delete('/candidate/{id}', [CandidateController::class, 'destroy']);
 
 
-Route::middleware('auth:sanctum')->post('/votingdate', [BoardManagerController::class, 'setVotingDate']);
-Route::get('/voting-dates', [BoardManagerController::class, 'getVotingDates']);              // All
-Route::get('/voting-date/{id}', [BoardManagerController::class, 'getVotingDateById']);       // By ID
-Route::post('/voting-date/by-title', [BoardManagerController::class, 'getVotingDateByTitle']);
-Route::middleware('auth:sanctum')->put('/voting-date/{id}', [BoardManagerController::class, 'updateVotingDate']);
+/** Voter End Point */
 
-Route::middleware('auth:sanctum')->post('/registrationdate', [BoardManagerController::class, 'setRegistrationTimeSpan']);
-Route::get('/registration-time-span', [BoardManagerController::class, 'getRegistrationTimeSpan']);     // Read (by title)
-Route::middleware('auth:sanctum')->put('/registration-time-span/{id}', [BoardManagerController::class, 'updateRegistrationTimeSpan']); // Update
-Route::middleware('auth:sanctum')->delete('/registration-time-span/{id}', [BoardManagerController::class, 'deleteRegistrationTimeSpan']);
+Route::get('/voter', [VoterController::class, 'index']);
+Route::post('/voter',[VoterController::class, 'store']);
+Route::put('/voter/{id}', [VoterController::class, 'update']);
+Route::delete('/voter/{id}', [VoterController::class, 'destroy']);
 
-Route::middleware('auth:sanctum')->put('/voting/override', [BoardManagerController::class, 'overRideVoting']);
+/** Voting Date End Point */
+Route::post('/votingdate', [VotingDateController::class, 'store']);
+Route::get('/voting-dates', [VotingDateController::class, 'index']);              // All
+Route::get('/voting-date/{id}', [VotingDateController::class, 'show']);
+Route::put('/voting-date/{id}', [VotingDateController::class, 'update']);       // By ID
+Route::delete('/voting-date/{id}', [VotingDateController::class, 'destroy']);
 
+
+
+/** Registration TimeSpan End Point */
+Route::post('/registration-time-span', [RegistrationTimeSpanController::class, 'store']);
+Route::get('/registration-time-span', [RegistrationTimeSpanController::class, 'index']);
+Route::put('/registration-time-span/{id}', [RegistrationTimeSpanController::class, 'update']);
+Route::delete('/registration-time-span/{id}', [RegistrationTimeSpanController::class, 'destroy']);
+
+
+/** Override End Point */
+Route::put('/voting/override', [BoardManagerController::class, 'overRideVoting']);
+
+});

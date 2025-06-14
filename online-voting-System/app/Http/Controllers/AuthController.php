@@ -13,10 +13,10 @@ class AuthController extends Controller
         $request->validate([
             'username' => 'required|string|unique:users,username',
             'password' => 'required|string|min:8|confirmed',
-            'phone_number' => 'required|string', 
+            'phone_number' => 'required|string',
             'role' => 'required|string',
-            // 'status' => 'required|in:active,inactive',
             'email' => 'required|email|unique:users,email',
+            'status' => 'in:active,inactive',
         ]);
 
         $user = User::create([
@@ -24,12 +24,23 @@ class AuthController extends Controller
             'password' => bcrypt($request->password),
             'phone_number' => $request->phone_number,
             'role' => $request->role,
-            'email' => $request->email
+            'email' => $request->email,
+            'status'=> $request->status ?? 'active',
         ]);
 
         return response()->json([
             'message' => 'user registered successfully',
             'user' => $user,
+        ], 201);
+    }
+
+    public function getUser(Request $request){
+
+        $user = User::all();
+
+        return response()->json([
+            'message' => 'lists of registered users',
+            'data' => $user,
         ], 201);
     }
 

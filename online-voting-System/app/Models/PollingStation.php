@@ -11,7 +11,7 @@ class PollingStation extends Model
         'name',
         'longitude',
         'latitude',
-         // 'status',
+        'status',
     ];
 
     // A polling station has many polling station staff
@@ -23,7 +23,7 @@ class PollingStation extends Model
     // A polling station belongs to one constituency
     public function constituency()
     {
-        return $this->belongsTo(Constituency::class, 'constituencies_id');
+        return $this->belongsTo(Constituency::class,);
     }
 
     // Access region through the constituency
