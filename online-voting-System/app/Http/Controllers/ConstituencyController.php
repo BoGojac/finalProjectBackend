@@ -35,7 +35,6 @@ class ConstituencyController extends Controller
         ]);
 
 
-
         $constituency = Constituency::create([
             'name' => $request->name,
             'longitude' => $request->longitude,
@@ -76,7 +75,7 @@ class ConstituencyController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+   public function destroy(string $id)
     {
         $constituency = Constituency::find($id);
 
@@ -84,21 +83,10 @@ class ConstituencyController extends Controller
             return response()->json(['message' => 'Constituency not found.'], 404);
         }
 
-        // Delete polling stations and their staff
-        // foreach ($constituency->pollingStations as $station) {
-        //     $station->pollingStationStaff()->delete(); // delete staff first
-        //     $station->delete();                        // then polling station
-        // }
-
-        // Delete constituency staff
-        // $constituency->constituencyStaff()->delete();
-
-        // Finally, delete the constituency
         $constituency->delete();
 
         return response()->json(['message' => 'Constituency and all related records deleted successfully.']);
     }
-
 
     /**
      * change the status of constituency

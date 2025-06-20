@@ -28,8 +28,13 @@ class PartyController extends Controller
             'participation_area' => 'required|in:national,regional',
             'region_id' => 'string|exists:regions,id',
             'status' => 'in:active,inactive',
-            'image' => 'required|string',
+            'image' => 'nullable|image|max:2048',
         ]);
+
+        $imagePath = null;
+    if ($request->hasFile('image')) {
+        $imagePath = $request->file('image')->store('parties', 'public');
+    }
 
         $regionId = null;
 
@@ -45,7 +50,7 @@ class PartyController extends Controller
             'participation_area' => $request->participation_area,
             'region_id' => $regionId,
             'status' => $request->status ?? 'active',
-            'image' => $request->image,
+            'image' => $imagePath,
         ]);
 
         return response()->json([

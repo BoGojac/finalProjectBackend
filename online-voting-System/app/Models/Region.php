@@ -8,7 +8,7 @@ class Region extends Model
 {
      protected $fillable=[
         'name',
-        'abbrevation'
+        'abbreviation'
      ];
 
      public function constituencies(){

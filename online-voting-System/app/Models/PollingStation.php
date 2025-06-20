@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class PollingStation extends Model
 {
     protected $fillable = [
-        'constituencies_id',
+        'constituency_id',
         'name',
         'longitude',
         'latitude',

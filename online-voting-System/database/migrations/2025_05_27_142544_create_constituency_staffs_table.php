@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('constituency_staffs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('constituencies_id')->constrained()->onDelete('cascade');
+            $table->foreignId('constituency_id')->constrained()->onDelete('cascade');
             $table->string('first_name');
             $table->string('middle_name');
             $table->string('last_name');

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->enum('participation_area', ['national', 'regional']);
             $table->foreignId('region_id')->nullable()->constrained()->onDelete('cascade');
             $table->enum('status', ['active', 'inactive'])->default('active');
-            $table->string('image');
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }

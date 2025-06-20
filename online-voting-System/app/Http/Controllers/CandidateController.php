@@ -33,10 +33,13 @@ class CandidateController extends Controller
             'disability' => 'required|string',
             'duration_of_residence' => 'required|string',
             'home_number' => 'required|string',
-            'image' => 'required|string',
+            'image' => 'nullable|image|max:2048',
         ]);
 
-
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('candidates', 'public');
+        }
 
         $candidate = Candidate::create([
             'user_id' => $request->user_id,
@@ -51,7 +54,7 @@ class CandidateController extends Controller
             'disability' =>  $request->disability,
             'duration_of_residence' =>  $request->duration_of_residence,
             'home_number' =>  $request->home_number,
-            'image' =>  $request->image,
+            'image' =>  $imagePath,
         ]);
 
          return response()->json([

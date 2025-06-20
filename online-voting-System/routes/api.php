@@ -21,7 +21,7 @@ use App\Http\Controllers\VotingDateController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::middleware('auth:sanctum')->group( function () {
+// Route::middleware('auth:sanctum')->group( function () {
 
     /** User End Point */
 Route::post('/logout', [AuthController::class, 'logout']);
@@ -78,8 +78,8 @@ Route::delete('/pollingstation/{id}', [PollingStationController::class, 'destroy
 Route::patch('/pollingstation/status/{id}', [PollingStationController::class, 'pollingStationStatus']);
 
 /** Party End Point */
-Route::post('/partyregistration', [PartyController::class, 'store']);
-Route::get('/parties', [PartyController::class, 'index']);
+Route::post('/party', [PartyController::class, 'store']);
+Route::get('/party', [PartyController::class, 'index']);
 Route::put('/party/{id}', [PartyController::class, 'update']);
 Route::delete('/party/{id}', [PartyController::class, 'destroy']);
 Route::patch('/party/status/{id}', [PartyController::class, 'partyStatus']);
@@ -119,4 +119,4 @@ Route::delete('/registration-time-span/{id}', [RegistrationTimeSpanController::c
 /** Override End Point */
 Route::put('/voting/override', [BoardManagerController::class, 'overRideVoting']);
 
-});
+// });

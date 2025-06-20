@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('party_id')->nullable()->constrained()->onDelete('cascade');
-            $table->foreignId('constituencies_id')->constrained()->onDelete('cascade');
+            $table->foreignId('constituency_id')->constrained()->onDelete('cascade');
             $table->string('first_name');
             $table->string('middle_name');
             $table->string('last_name');
@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('disability')->nullable();
             $table->string('duration_of_residence');
             $table->string('home_number');
-            $table->string('image');
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }

@@ -26,12 +26,12 @@ class RegionController extends Controller
     {
         $request->validate([
         'name' => 'required|string',
-        'abbrevation' => 'required|string',
+        'abbreviation' => 'required|string',
         ]);
 
         $region = Region::create([
             'name' => $request->name,
-            'abbrevation' => $request->abbrevation,
+            'abbreviation' => $request->abbreviation,
         ]);
 
          return response()->json([
@@ -72,26 +72,9 @@ class RegionController extends Controller
             return response()->json(['message' => 'Region not found.'], 404);
         }
 
-        // Delete related parties and their candidates
-        foreach ($region->parties as $party) {
-            $party->candidates()->delete();
-            $party->delete();
-        }
-
-        // Delete related constituencies and their resources
-        foreach ($region->constituencies as $constituency) {
-            foreach ($constituency->pollingStations as $station) {
-                $station->pollingStationStaff()->delete();
-                $station->delete();
-            }
-
-            $constituency->constituencyStaff()->delete();
-            $constituency->delete();
-        }
-
-        // Finally, delete the region
         $region->delete();
 
         return response()->json(['message' => 'Region and all related records deleted successfully.']);
     }
+
 }

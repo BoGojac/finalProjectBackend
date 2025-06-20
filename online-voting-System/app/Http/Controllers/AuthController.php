@@ -51,7 +51,7 @@ class AuthController extends Controller
         ]);
         if (! Auth::attempt($credentials)) {
         return response()->json([
-            'message' => 'User not found'
+            'message' => 'Invalid Credential'
         ], 401);
         }
         /**@var User $user */
@@ -59,6 +59,7 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
         return response()->json([
             'message'       => 'Login success',
+             'user' => $user,
             'access_token'  => $token,
         ]);
 

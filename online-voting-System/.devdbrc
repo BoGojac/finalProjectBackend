@@ -1,0 +1,6 @@
+[
+  {
+    "type": "sqlite",
+    "path": "d:\\Ghub\\finalProjectBackend\\online-voting-System\\database\\database.sqlite"
+  }
+]

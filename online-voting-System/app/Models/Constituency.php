@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Constituency extends Model
 {
+
+
+
     protected $fillable = [
         'name',
         'longitude',
@@ -14,12 +17,13 @@ class Constituency extends Model
         'status',
     ];
 
+
     public function pollingStations()
     {
         return $this->hasMany(PollingStation::class);
     }
 
-    public function constituencyStaffs()
+    public function constituencyStaff()
     {
         return $this->hasMany(ConstituencyStaff::class);
     }
@@ -33,4 +37,5 @@ class Constituency extends Model
     {
         return $this->belongsTo(Region::class);
     }
+
 }

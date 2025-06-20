@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('polling_stations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('constituencies_id')->constrained()->onDelete('cascade');
+            $table->foreignId('constituency_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->decimal('longitude', 11, 8);
             $table->decimal('latitude', 10, 8);

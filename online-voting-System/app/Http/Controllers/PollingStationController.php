@@ -12,11 +12,25 @@ class PollingStationController extends Controller
      */
     public function index()
     {
-        $pollingstation = PollingStation::all();
+        $pollingStations = PollingStation::with('constituency.region')->get();
+
+        $data = $pollingStations->map(function ($station) {
+            return [
+                'id' => $station->id,
+                'name' => $station->name,
+                'longitude' => $station->longitude,
+                'latitude' => $station->latitude,
+                'status' => $station->status,
+                'constituency_id' => $station->constituency?->id,
+                'constituency_name' => $station->constituency?->name,
+                'region_id' => $station->constituency?->region?->id, // ✅ Required for edit form
+            ];
+        });
+
         return response()->json([
-            'message' => 'here is the polling stations list',
-            'data' => $pollingstation,
-        ], 201);
+            'message' => 'Polling stations list',
+            'data' => $data,
+        ]);
     }
 
     /**
@@ -25,7 +39,7 @@ class PollingStationController extends Controller
     public function store(Request $request)
     {
        $request->validate([
-            'constituencies_id' => 'required|exists:constituencies,id',
+            'constituency_id' => 'required|exists:constituencies,id',
             'name' => 'required|string',
             'longitude' => 'required|numeric|decimal:8',
             'latitude' => 'required|numeric|decimal:8',
@@ -33,7 +47,7 @@ class PollingStationController extends Controller
         ]);
 
         $pollingstation = PollingStation::create([
-            'constituencies_id' => $request->constituencies_id,
+            'constituency_id' => $request->constituency_id,
             'name' => $request->name,
             'longitude' => $request->longitude,
             'latitude' => $request->latitude,
@@ -78,14 +92,11 @@ class PollingStationController extends Controller
             return response()->json(['message' => 'Polling station not found.'], 404);
         }
 
-        // Delete related polling station staff first
-        $pollingstation->pollingStationStaff()->delete();
+        $pollingstation->delete(); 
 
-        // Then delete the polling station
-        $pollingstation->delete();
-
-        return response()->json(['message' => 'Polling station and staff deleted successfully.']);
+        return response()->json(['message' => 'Polling station and associated staff deleted successfully.']);
     }
+
 
     /**
      * change the status of PollingStation
