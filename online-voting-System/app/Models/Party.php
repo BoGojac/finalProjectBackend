@@ -11,10 +11,12 @@ class Party extends Model
         'abbrevation',
         'leader',
         'foundation_year',
+        'headquarters',
         'participation_area',
         'region_id',
-         // 'status',
+        'status',
         'image',
+        'original_image_name',
     ];
 
 
@@ -26,4 +28,5 @@ class Party extends Model
     public function region(){
         return $this->belongsTo(Region::class);
     }
+
 }

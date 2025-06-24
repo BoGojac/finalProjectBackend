@@ -27,6 +27,9 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
 Route::post('/userregister', [AuthController::class, 'register']);
 Route::get('/user', [AuthController::class, 'getUser']);
+Route::put('/user/{id}', [AuthController::class, 'update']);
+Route::patch('/user/status/{id}', [AuthController::class, 'toggleStatus']);
+
 
 
 /** Admin End Point */

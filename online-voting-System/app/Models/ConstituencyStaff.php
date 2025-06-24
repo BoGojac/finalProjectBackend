@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class ConstituencyStaff extends Model
 {
-    protected $fillable=[
+    protected $table = 'constituency_staffs';
+
+    protected $fillable = [
         'user_id',
-        'constituencies_id',
+        'constituency_id', // <- fixed key name
         'first_name',
         'middle_name',
         'last_name',

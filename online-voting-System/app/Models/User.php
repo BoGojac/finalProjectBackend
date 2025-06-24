@@ -54,15 +54,15 @@ class User extends Authenticatable
         return $this->hasOne(Admin::class);
     }
 
-    public function boardmanagers(){
+    public function board_managers(){
         return $this->hasOne(BoardManager::class);
     }
 
-    public function constituencyStaffs(){
+    public function constituency_staffs(){
         return $this->hasOne(ConstituencyStaff::class);
     }
 
-    public function pollingStationStaffs(){
+    public function polling_station_staffs(){
         return $this->hasOne(PollingStationStaff::class);
     }
 

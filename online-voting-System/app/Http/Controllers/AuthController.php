@@ -34,15 +34,43 @@ class AuthController extends Controller
         ], 201);
     }
 
-    public function getUser(Request $request){
+    public function getUser()
+    {
+        $users = User::with([
+            'admin:id,user_id,first_name,middle_name,last_name,gender',
+            'board_managers:id,user_id,first_name,middle_name,last_name,gender',
+            'constituency_staffs:id,user_id,first_name,middle_name,last_name,gender',
+            'polling_station_staffs:id,user_id,first_name,middle_name,last_name,gender',
+            'candidates:id,user_id,first_name,middle_name,last_name,gender',
+            'voters:id,user_id,first_name,middle_name,last_name,gender',
+        ])->get()->map(function ($user) {
+            $detail = $user->admin
+                ?: $user->board_managers
+                ?: $user->constituency_staffs
+                ?: $user->polling_station_staffs
+                ?: $user->candidates
+                ?: $user->voters;
 
-        $user = User::all();
+            return [
+                'id' => $user->id,
+                'username' => $user->username,
+                'email' => $user->email,
+                'phone_number' => $user->phone_number,
+                'role' => $user->role,
+                'status' => $user->status,
+                'first_name' => $detail->first_name ?? null,
+                'middle_name' => $detail->middle_name ?? null,
+                'last_name' => $detail->last_name ?? null,
+                'gender' => $detail->gender ?? null,
+            ];
+        });
 
         return response()->json([
-            'message' => 'lists of registered users',
-            'data' => $user,
-        ], 201);
+            'message' => 'Users retrieved successfully',
+            'data' => $users,
+        ]);
     }
+
 
     public function login(Request $request){
         $credentials = $request -> validate([
@@ -78,4 +106,36 @@ class AuthController extends Controller
                  'message' => 'Logout success',
             ]);
     }
+
+    /**
+     * User Updating
+     */
+
+
+     public function update(Request $request, string $id){
+
+     }
+
+
+
+    /**
+     * Toggle user status between active and inactive.
+     */
+    public function toggleStatus($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found.'], 404);
+        }
+
+        $user->status = $user->status === 'active' ? 'inactive' : 'active';
+        $user->save();
+
+        return response()->json([
+            'message' => 'User status updated successfully.',
+            'user' => $user
+        ]);
+    }
+
 }

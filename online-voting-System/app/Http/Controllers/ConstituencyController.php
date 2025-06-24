@@ -31,7 +31,7 @@ class ConstituencyController extends Controller
             'longitude' => 'required|numeric|decimal:8',
             'latitude' => 'required|numeric|decimal:8',
             'region_id' => 'required|exists:regions,id',
-            'status' => 'in:active,inactive',
+            'status' => 'in:active,inactive', 
         ]);
 
 
