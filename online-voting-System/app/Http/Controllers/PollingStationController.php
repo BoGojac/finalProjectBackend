@@ -39,6 +39,7 @@ class PollingStationController extends Controller
     public function store(Request $request)
     {
        $request->validate([
+            'voting_date_id'=> 'required|exists:voting_dates,id',
             'constituency_id' => 'required|exists:constituencies,id',
             'name' => 'required|string',
             'longitude' => 'required|numeric|decimal:8',
@@ -47,6 +48,7 @@ class PollingStationController extends Controller
         ]);
 
         $pollingstation = PollingStation::create([
+            'voting_date_id' => $request->voting_date_id,
             'constituency_id' => $request->constituency_id,
             'name' => $request->name,
             'longitude' => $request->longitude,
@@ -92,7 +94,7 @@ class PollingStationController extends Controller
             return response()->json(['message' => 'Polling station not found.'], 404);
         }
 
-        $pollingstation->delete(); 
+        $pollingstation->delete();
 
         return response()->json(['message' => 'Polling station and associated staff deleted successfully.']);
     }

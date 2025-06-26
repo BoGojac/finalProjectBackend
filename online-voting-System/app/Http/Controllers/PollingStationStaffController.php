@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PollingStation;
+use App\Models\PollingStationStaff;
 use Illuminate\Http\Request;
 
 class PollingStationStaffController extends Controller
@@ -29,7 +29,7 @@ class PollingStationStaffController extends Controller
         'gender' => 'required|in:male,female',
         ]);
 
-        $pollingstationstaff = PollingStation::create([
+        $pollingstationstaff = PollingStationStaff::create([
             'user_id' => $request->user_id,
             'polling_station_id' => $request->polling_station_id,
             'first_name' => $request->first_name,
@@ -55,9 +55,34 @@ class PollingStationStaffController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+   public function update(Request $request, string $id)
     {
-        //
+        $staff = PollingStationStaff::where('user_id', $id)->first();
+
+        if (!$staff) {
+            return response()->json(['message' => 'Polling Station Staff not found.'], 404);
+        }
+
+        $request->validate([
+            'first_name' => 'required|string',
+            'middle_name' => 'nullable|string',
+            'last_name' => 'required|string',
+            'gender' => 'required|in:male,female',
+            'polling_station_id' => 'required|exists:polling_stations,id',
+        ]);
+
+        $staff->update([
+            'first_name' => $request->first_name,
+            'middle_name' => $request->middle_name,
+            'last_name' => $request->last_name,
+            'gender' => $request->gender,
+            'polling_station_id' => $request->polling_station_id,
+        ]);
+
+        return response()->json([
+            'message' => 'Polling Station Staff updated successfully',
+            'data' => $staff,
+        ]);
     }
 
     /**

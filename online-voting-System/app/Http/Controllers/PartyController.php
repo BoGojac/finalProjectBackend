@@ -49,6 +49,7 @@ class PartyController extends Controller
             'headquarters' => 'required|string', // ✅ Add this
             'participation_area' => 'required|in:national,regional',
             'region_id' => 'string|exists:regions,id',
+            'voting_date_id'=> 'required|exists:voting_dates,id',
             'status' => 'in:active,inactive',
             'image' => 'nullable|image|max:2048',
         ]);
@@ -70,6 +71,7 @@ class PartyController extends Controller
         }
 
         $party = Party::create([
+            'voting_date_id' => $request->voting_date_id,
             'name' => $request->name,
             'abbrevation' => $request->abbrevation,
             'leader' => $request->leader,

@@ -67,6 +67,7 @@ Route::delete('/regions/{id}', [RegionController::class, 'destroy']);
 
 /** constituency end points */
 Route::get('/constituency', [ConstituencyController::class, 'index']);
+Route::get('/constituency/user/{user_id}', [ConstituencyController::class, 'getConstituencyByUserId']);
 Route::post('/constituency',[ConstituencyController::class, 'store']);
 Route::put('/constituency/{id}', [ConstituencyController::class, 'update']);
 Route::delete('/constituency/{id}', [ConstituencyController::class, 'destroy']);
@@ -104,8 +105,8 @@ Route::put('/voter/{id}', [VoterController::class, 'update']);
 Route::delete('/voter/{id}', [VoterController::class, 'destroy']);
 
 /** Voting Date End Point */
-Route::post('/votingdate', [VotingDateController::class, 'store']);
-Route::get('/voting-dates', [VotingDateController::class, 'index']);              // All
+Route::post('/voting-date', [VotingDateController::class, 'store']);
+Route::get('/voting-date', [VotingDateController::class, 'index']);              // All
 Route::get('/voting-date/{id}', [VotingDateController::class, 'show']);
 Route::put('/voting-date/{id}', [VotingDateController::class, 'update']);       // By ID
 Route::delete('/voting-date/{id}', [VotingDateController::class, 'destroy']);

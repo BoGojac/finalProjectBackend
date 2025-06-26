@@ -10,6 +10,7 @@ class Constituency extends Model
 
 
     protected $fillable = [
+        'voting_date_id',
         'name',
         'longitude',
         'latitude',
@@ -28,6 +29,10 @@ class Constituency extends Model
         return $this->hasMany(ConstituencyStaff::class);
     }
 
+    public function user(){
+        return $this->hasMany(User::class);
+    }
+
     public function candidates()
     {
         return $this->hasMany(Candidate::class);
@@ -36,6 +41,9 @@ class Constituency extends Model
     public function region()
     {
         return $this->belongsTo(Region::class);
+    }
+    public function voting_date(){
+        return $this->belongsTo(VotingDate::class);
     }
 
 }

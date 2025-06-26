@@ -10,7 +10,7 @@ class VotingDateController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index() 
     {
         $votingdate = VotingDate::all();
         return response()->json([

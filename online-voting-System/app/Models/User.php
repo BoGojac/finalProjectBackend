@@ -19,6 +19,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'voting_date_id',
         'username',
         'email',
         'password',
@@ -72,5 +73,14 @@ class User extends Authenticatable
 
     public function voters(){
         return $this->hasOne(Voter::class);
+    }
+
+    public function voting_date(){
+        return $this->belongsTo(VotingDate::class);
+    }
+
+    public function constituency()
+    {
+        return $this->belongsTo(Constituency::class);
     }
 }

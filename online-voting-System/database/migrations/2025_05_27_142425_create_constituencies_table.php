@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->foreignId('region_id')->constrained()->onDelete('cascade');
+            $table->foreignId('voting_date_id')->constrained()->onDelete('cascade');
             $table->decimal('longitude', 11, 8);
             $table->decimal('latitude', 10, 8);
             $table->enum('status', ['active', 'inactive'])->default('active');

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Candidate extends Model
 {
-    protected $fillable=[
+    protected $fillable = [
         'user_id',
         'party_id',
         'constituency_id',
@@ -17,26 +17,34 @@ class Candidate extends Model
         'registration_date',
         'birth_date',
         'disability',
+        'disability_type',
         'duration_of_residence',
         'home_number',
         'image',
+        'original_image_name',
+        'candidate_type',
     ];
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function party(){
+    public function party()
+    {
         return $this->belongsTo(Party::class);
     }
 
-    public function constituency(){
+    public function constituency()
+    {
         return $this->belongsTo(Constituency::class);
     }
 
-    // Access region through the party
+    // Access region through the party (custom accessor)
     public function region()
     {
-        return $this->party ? $this->party->region : null;
+        return $this->hasOneThrough(Region::class, Party::class, 'id', 'id', 'party_id', 'region_id');
     }
+
 }
+

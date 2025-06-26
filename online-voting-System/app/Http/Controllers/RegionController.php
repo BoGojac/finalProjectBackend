@@ -27,11 +27,13 @@ class RegionController extends Controller
         $request->validate([
         'name' => 'required|string',
         'abbreviation' => 'required|string',
+        'voting_date_id'=> 'required|exists:voting_dates,id',
         ]);
 
         $region = Region::create([
             'name' => $request->name,
             'abbreviation' => $request->abbreviation,
+            'voting_date_id' => $request->voting_date_id,
         ]);
 
          return response()->json([

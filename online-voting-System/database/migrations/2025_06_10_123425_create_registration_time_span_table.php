@@ -14,11 +14,15 @@ return new class extends Migration
         Schema::create('registration_time_spans', function (Blueprint $table) {
             $table->id();
             $table->foreignId('voting_date_id')->constrained()->onDelete('cascade');
-            $table->dateTime('beginning_date');
-            $table->dateTime('ending_date');
+            $table->enum('type', ['voter', 'candidate']);
+            $table->date('beginning_date');
+            $table->date('ending_date');
             $table->timestamps();
+
+            $table->unique(['voting_date_id', 'type']); // ✅ enforce only one voter/candidate per voting date
         });
     }
+
 
     /**
      * Reverse the migrations.

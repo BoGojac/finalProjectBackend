@@ -59,8 +59,32 @@ class AdminController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $admin = Admin::where('user_id', $id)->first();
+
+        if (!$admin) {
+            return response()->json(['message' => 'Admin not found.'], 404);
+        }
+
+        $request->validate([
+            'first_name' => 'required|string',
+            'middle_name' => 'nullable|string',
+            'last_name' => 'required|string',
+            'gender' => 'required|in:male,female',
+        ]);
+
+        $admin->update([
+            'first_name' => $request->first_name,
+            'middle_name' => $request->middle_name,
+            'last_name' => $request->last_name,
+            'gender' => $request->gender,
+        ]);
+
+        return response()->json([
+            'message' => 'Admin updated successfully',
+            'data' => $admin,
+        ]);
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -78,4 +102,3 @@ class AdminController extends Controller
         return response()->json(['message' => 'deleted successfully.']);
     }
 }
- 

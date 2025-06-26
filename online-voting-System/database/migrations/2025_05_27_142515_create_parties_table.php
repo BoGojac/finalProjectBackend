@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('headquarters');
             $table->enum('participation_area', ['national', 'regional']);
             $table->foreignId('region_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('voting_date_id')->constrained()->onDelete('cascade');
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->string('image')->nullable();
             $table->string('original_image_name')->nullable();

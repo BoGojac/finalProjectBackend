@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Constituency;
+use App\Models\ConstituencyStaff;
 use Illuminate\Http\Request;
 
 class ConstituencyStaffController extends Controller
@@ -12,7 +12,11 @@ class ConstituencyStaffController extends Controller
      */
     public function index()
     {
-        //
+        $constituencystaff = ConstituencyStaff::all();
+        return response()->json([
+            'message' => 'here is the constituencies',
+            'data' => $constituencystaff
+        ]);
     }
 
     /**
@@ -22,16 +26,16 @@ class ConstituencyStaffController extends Controller
     {
        $request->validate([
         'user_id' => 'required|exists:Users,id',
-        'constituencies_id' => 'required|exists:constituencies,id',
+        'constituency_id' => 'required|exists:constituencies,id',
         'first_name' => 'required|string',
         'middle_name' => 'required|string',
         'last_name' => 'required|string',
         'gender' => 'required|in:male,female',
         ]);
 
-        $constituencystaff = Constituency::create([
+        $constituencystaff = ConstituencyStaff::create([
             'user_id' => $request->user_id,
-            'constituencies_id' => $request->constituencies_id,
+            'constituency_id' => $request->constituency_id,
             'first_name' => $request->first_name,
             'middle_name' => $request->middle_name,
             'last_name' => $request->last_name,
@@ -57,7 +61,32 @@ class ConstituencyStaffController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $staff = ConstituencyStaff::where('user_id', $id)->first();
+
+        if (!$staff) {
+            return response()->json(['message' => 'Constituency Staff not found.'], 404);
+        }
+
+        $request->validate([
+            'first_name' => 'required|string',
+            'middle_name' => 'nullable|string',
+            'last_name' => 'required|string',
+            'gender' => 'required|in:male,female',
+            'constituency_id' => 'required|exists:constituencies,id',
+        ]);
+
+        $staff->update([
+            'first_name' => $request->first_name,
+            'middle_name' => $request->middle_name,
+            'last_name' => $request->last_name,
+            'gender' => $request->gender,
+            'constituency_id' => $request->constituency_id,
+        ]);
+
+        return response()->json([
+            'message' => 'Constituency staff updated successfully',
+            'data' => $staff,
+        ]);
     }
 
     /**

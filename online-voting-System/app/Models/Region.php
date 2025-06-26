@@ -8,7 +8,8 @@ class Region extends Model
 {
      protected $fillable=[
         'name',
-        'abbreviation'
+        'abbreviation',
+        'voting_date_id',
      ];
 
      public function constituencies(){
@@ -17,5 +18,9 @@ class Region extends Model
 
     public function parties(){
         return $this->hasMany(Party::class);
+    }
+
+    public function voting_date(){
+        return $this->belongsTo(VotingDate::class);
     }
 }

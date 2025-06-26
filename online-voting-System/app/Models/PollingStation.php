@@ -8,6 +8,7 @@ class PollingStation extends Model
 {
     protected $fillable = [
         'constituency_id',
+        'voting_date_id',
         'name',
         'longitude',
         'latitude',
@@ -30,5 +31,8 @@ class PollingStation extends Model
     public function region()
     {
         return $this->constituency ? $this->constituency->region : null;
+    }
+    public function voting_date(){
+        return $this->belongsTo(VotingDate::class);
     }
 }

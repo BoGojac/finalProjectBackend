@@ -11,6 +11,7 @@ class AuthController extends Controller
 {
     public function register(Request $request){
         $request->validate([
+            'voting_date_id'=> 'required|exists:voting_dates,id',
             'username' => 'required|string|unique:users,username',
             'password' => 'required|string|min:8|confirmed',
             'phone_number' => 'required|string',
@@ -20,6 +21,7 @@ class AuthController extends Controller
         ]);
 
         $user = User::create([
+            'voting_date_id' => $request->voting_date_id,
             'username' => $request->username,
             'password' => bcrypt($request->password),
             'phone_number' => $request->phone_number,
@@ -112,24 +114,49 @@ class AuthController extends Controller
      */
 
 
-     public function update(Request $request, string $id){
+     public function update(Request $request, string $id)
+    {
+        $user = User::find($id);
 
-     }
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $request->validate([
+            'email' => 'required|email|unique:users,email,' . $id,
+            'phone_number' => 'required|string',
+            'username' => 'required|string|unique:users,username,' . $id,
+        ]);
+
+        $user->email = $request->email;
+        $user->phone_number = $request->phone_number;
+        $user->username = $request->username;
+        $user->save();
+
+        return response()->json([
+            'message' => 'User updated successfully',
+            'user' => $user
+        ]);
+    }
+
 
 
 
     /**
      * Toggle user status between active and inactive.
      */
-    public function toggleStatus($id)
+    public function toggleStatus(Request $request, $id)
     {
         $user = User::find($id);
-
         if (!$user) {
             return response()->json(['message' => 'User not found.'], 404);
         }
 
-        $user->status = $user->status === 'active' ? 'inactive' : 'active';
+        $request->validate([
+            'status' => 'required|in:active,inactive',
+        ]);
+
+        $user->status = $request->status;
         $user->save();
 
         return response()->json([

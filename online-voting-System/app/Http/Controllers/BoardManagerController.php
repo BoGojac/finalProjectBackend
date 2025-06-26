@@ -61,18 +61,31 @@ class BoardManagerController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $boardmanager = BoardManager:: find($id);
+        // Find by user_id 
+        $boardmanager = BoardManager::where('user_id', $id)->first();
 
         if (!$boardmanager) {
             return response()->json(['message' => 'Boardmanager not found.'], 404);
         }
 
-        $boardmanager->update($request->all());
+        $request->validate([
+            'first_name' => 'required|string',
+            'middle_name' => 'nullable|string',
+            'last_name' => 'required|string',
+            'gender' => 'required|in:male,female',
+        ]);
+
+        $boardmanager->update([
+            'first_name' => $request->first_name,
+            'middle_name' => $request->middle_name,
+            'last_name' => $request->last_name,
+            'gender' => $request->gender,
+        ]);
 
         return response()->json([
-            'message' => 'boardmanger information updated successfully',
+            'message' => 'Boardmanager information updated successfully',
             'data' => $boardmanager,
-        ], 201);
+        ]);
     }
 
     /**
