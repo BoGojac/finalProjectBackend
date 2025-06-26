@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ConstituencyStaff;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ConstituencyStaffController extends Controller
 {
@@ -53,7 +54,11 @@ class ConstituencyStaffController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $staff = ConstituencyStaff::find($id);
+        return response()->json([
+            'message' =>  'this is the constituency staff you search for',
+            'data' => $staff,
+        ], 201);
     }
 
     /**
@@ -95,5 +100,14 @@ class ConstituencyStaffController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function get_Auth_Candidate()
+    {
+        $constituencystaff = Auth::user()->constituency_staffs;
+        return response()->json([
+            'message'=> 'this the constituency staff loged in',
+            'data'=> $constituencystaff,
+        ]);
     }
 }

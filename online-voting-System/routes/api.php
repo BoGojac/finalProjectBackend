@@ -20,6 +20,7 @@ use App\Http\Controllers\VotingDateController;
 /** User End Point */
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/constituencystaff-user', [ConstituencyStaffController::class, 'get_Auth_Candidate'])->middleware('auth:sanctum');
 
 // Route::middleware('auth:sanctum')->group( function () {
 
@@ -41,12 +42,15 @@ Route::delete('/admin/{id}', [AdminController::class, 'destroy']);
 
 /** Board Manager End Point */
 Route::get('/boardmanagers', [BoardManagerController::class, 'index']);
+Route::get('/boardmanagers/{id}', [BoardManagerController::class, 'update']);
 Route::post('/boardmanagers',[BoardManagerController::class, 'store']);
 Route::put('/boardmanagers/{id}', [BoardManagerController::class, 'update']);
 Route::delete('/boardmanagers/{id}', [BoardManagerController::class, 'destroy']);
 
 /** Constituency Staff End Point */
+
 Route::get('/constituencystaff', [ConstituencyStaffController::class, 'index']);
+Route::get('/constituencystaff/{id}', [ConstituencyStaffController::class, 'show']);
 Route::post('/constituencystaff',[ConstituencyStaffController::class, 'store']);
 Route::put('/constituencystaff/{id}', [ConstituencyStaffController::class, 'update']);
 Route::delete('/constituencystaff/{id}', [ConstituencyStaffController::class, 'destroy']);

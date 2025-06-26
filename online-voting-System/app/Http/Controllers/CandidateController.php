@@ -10,9 +10,9 @@ class CandidateController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+     public function index()
     {
-        $candidates = Candidate::all();
+        $candidates = Candidate::with('user')->get();
         return response()->json($candidates);
     }
 
@@ -69,7 +69,7 @@ class CandidateController extends Controller
         $validated['duration_of_residence'] = $validated['residence_duration'] . ' ' . $validated['residence_unit'];
 
         // Set registration date to today
-        $validated['registration_date'] = now()->format('Y-m-d');
+        $validated['registration_date'] = now()->format('m-d-Y');
 
         // Create candidate
         $candidate = Candidate::create($validated);
