@@ -19,6 +19,10 @@ class Constituency extends Model
     ];
 
 
+    /**
+     * to set eloquent relation
+     */
+
     public function pollingStations()
     {
         return $this->hasMany(PollingStation::class);

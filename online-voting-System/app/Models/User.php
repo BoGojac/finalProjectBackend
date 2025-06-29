@@ -51,11 +51,15 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * to set eloquent relation
+     */
+
     public function admin(){
         return $this->hasOne(Admin::class);
     }
 
-    public function board_managers(){
+    public function board_manager(){
         return $this->hasOne(BoardManager::class);
     }
 
@@ -63,7 +67,7 @@ class User extends Authenticatable
         return $this->hasOne(ConstituencyStaff::class);
     }
 
-    public function polling_station_staffs(){
+    public function polling_station_staff(){
         return $this->hasOne(PollingStationStaff::class);
     }
 

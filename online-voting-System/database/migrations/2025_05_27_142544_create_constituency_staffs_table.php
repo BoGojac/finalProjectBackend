@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations. 
+     * Run the migrations.
      */
     public function up(): void
     {
@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('middle_name');
             $table->string('last_name');
-            $table->enum('gender',['male', 'female']);
+            $table->enum('gender',['Male', 'Female']);
             $table->timestamps();
         });
     }

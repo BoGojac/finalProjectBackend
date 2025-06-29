@@ -95,19 +95,26 @@ class AuthController extends Controller
 
     }
 
-    public function logout(Request $request){
-         /** @var User $user */
-            $user = $request->user();
+    public function logout(Request $request)
+    {
+        /** @var User|null $user */
+        $user = $request->user();
 
-            // Use delete on the token relationship
-            $user->tokens->each(function ($token) {
-                $token->delete();
-            });
-
+        if (!$user) {
             return response()->json([
-                 'message' => 'Logout success',
-            ]);
+                'message' => 'Unauthenticated.',
+            ], 401);
+        }
+
+        $user->tokens->each(function ($token) {
+            $token->delete();
+        });
+
+        return response()->json([
+            'message' => 'Logout success',
+        ]);
     }
+
 
     /**
      * User Updating

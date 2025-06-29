@@ -18,9 +18,24 @@ class Voter extends Model
         'disability',
         'duration_of_residence',
         'home_number',
+        'voting_status',
     ];
 
+    /**
+     *
+     */
+
+     protected $hidden = [
+    'voting_status',
+    ];
+
+    /**
+     * to set eloquent relation 
+     */
     public function user(){
         return $this->belongsTo(User::class);
     }
+
+
+
 }

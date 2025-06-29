@@ -20,6 +20,10 @@ class Party extends Model
         'original_image_name',
     ];
 
+    /**
+     * to set eloquent relation
+     */
+
     public function candidates()
     {
         return $this->hasMany(Candidate::class);

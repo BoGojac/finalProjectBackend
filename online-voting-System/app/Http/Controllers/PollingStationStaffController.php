@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PollingStationStaff;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PollingStationStaffController extends Controller
 {
@@ -26,7 +27,7 @@ class PollingStationStaffController extends Controller
         'first_name' => 'required|string',
         'middle_name' => 'required|string',
         'last_name' => 'required|string',
-        'gender' => 'required|in:male,female',
+        'gender' => 'required|in:Male,Female',
         ]);
 
         $pollingstationstaff = PollingStationStaff::create([
@@ -49,7 +50,11 @@ class PollingStationStaffController extends Controller
      */
     public function show(string $id)
     {
-        //
+         $pollingstationstaff = PollingStationStaff::find($id);
+        return response()->json([
+            'message' =>  'this is the constituency staff you search for',
+            'data' => $pollingstationstaff,
+        ], 201);
     }
 
     /**
@@ -67,7 +72,7 @@ class PollingStationStaffController extends Controller
             'first_name' => 'required|string',
             'middle_name' => 'nullable|string',
             'last_name' => 'required|string',
-            'gender' => 'required|in:male,female',
+            'gender' =>  'required|in:Male,Female',
             'polling_station_id' => 'required|exists:polling_stations,id',
         ]);
 
@@ -91,5 +96,21 @@ class PollingStationStaffController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    /**
+     * get authenticated board manager
+     */
+    public function get_Auth_PollingStationStaff()
+    {
+        $user = Auth::user();
+        $pollingstationstaff = $user->Polling_station_staff;
+        return response()->json([
+            'message'=> 'this the constituency staff loged in',
+            'data'=> [
+                'user'=> $user,
+                'pollingstationstaff' => $pollingstationstaff,
+            ],
+        ]);
     }
 }

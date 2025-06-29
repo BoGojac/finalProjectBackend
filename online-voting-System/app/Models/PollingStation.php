@@ -15,6 +15,10 @@ class PollingStation extends Model
         'status',
     ];
 
+    /**
+     * to set eloquent relation
+     */
+
     // A polling station has many polling station staff
     public function pollingStationStaffs()
     {

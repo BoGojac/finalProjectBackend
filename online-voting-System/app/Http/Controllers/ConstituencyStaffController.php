@@ -31,7 +31,7 @@ class ConstituencyStaffController extends Controller
         'first_name' => 'required|string',
         'middle_name' => 'required|string',
         'last_name' => 'required|string',
-        'gender' => 'required|in:male,female',
+        'gender' =>  'required|in:Male,Female',
         ]);
 
         $constituencystaff = ConstituencyStaff::create([
@@ -76,7 +76,7 @@ class ConstituencyStaffController extends Controller
             'first_name' => 'required|string',
             'middle_name' => 'nullable|string',
             'last_name' => 'required|string',
-            'gender' => 'required|in:male,female',
+            'gender' => 'required|in:Male,Female',
             'constituency_id' => 'required|exists:constituencies,id',
         ]);
 
@@ -102,12 +102,18 @@ class ConstituencyStaffController extends Controller
         //
     }
 
-    public function get_Auth_Candidate()
+    public function get_Auth_ConstituencyStaff()
     {
-        $constituencystaff = Auth::user()->constituency_staffs;
+        $user = Auth::user(); // get base user
+        $constituencyStaff = $user->constituency_staffs;
+
         return response()->json([
-            'message'=> 'this the constituency staff loged in',
-            'data'=> $constituencystaff,
+            'message' => 'This is the constituency staff logged in',
+            'data' => [
+                'user' => $user,
+                'constituency_staff' => $constituencyStaff,
+            ],
         ]);
     }
+
 }

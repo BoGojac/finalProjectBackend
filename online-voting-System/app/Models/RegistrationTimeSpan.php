@@ -13,6 +13,11 @@ class RegistrationTimeSpan extends Model
         'ending_date'
     ];
 
+
+    /**
+     * to set eloquent relation
+     */
+    
     public function votingDate(){
         return $this->belongsTo(VotingDate::class);
     }

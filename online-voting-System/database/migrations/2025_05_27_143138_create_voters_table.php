@@ -18,12 +18,14 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('middle_name');
             $table->string('last_name');
-            $table->enum('gender',['male', 'female']);
+            $table->enum('gender', ['Male', 'Female']); // Changed to match frontend
             $table->date('registration_date');
             $table->date('birth_date');
-            $table->string('disability')->nullable();
+            $table->enum('disability', ['None', 'Visual', 'Hearing', 'Physical', 'Intellectual', 'Other'])->default('None');
+            $table->string('disability_type')->nullable();
             $table->string('duration_of_residence');
-            $table->string('home_number');
+            $table->string('home_number')->nullable();
+            $table->enum('voting_status', ['pending', 'voted'])->default('pending');
             $table->timestamps();
         });
     }

@@ -16,6 +16,11 @@ class PollingStationStaff extends Model
         'gender',
     ];
 
+
+    /**
+     * to set eloquent relation
+     */
+
     public function user()
     {
         return $this->belongsTo(User::class);

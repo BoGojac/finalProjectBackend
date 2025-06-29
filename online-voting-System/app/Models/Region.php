@@ -12,6 +12,10 @@ class Region extends Model
         'voting_date_id',
      ];
 
+     /**
+     * to set eloquent relation
+     */
+
      public function constituencies(){
         return $this->hasMany(Constituency::class);
     }

@@ -20,12 +20,17 @@ use App\Http\Controllers\VotingDateController;
 /** User End Point */
 
 Route::post('/login', [AuthController::class, 'login']);
-Route::get('/constituencystaff-user', [ConstituencyStaffController::class, 'get_Auth_Candidate'])->middleware('auth:sanctum');
+Route::get('/constituencystaff-user', [ConstituencyStaffController::class, 'get_Auth_ConstituencyStaff'])->middleware('auth:sanctum');
+Route::get('/candidate-user', [CandidateController::class, 'get_Auth_Candidate'])->middleware('auth:sanctum');
+Route::get('/boardmanagers-user', [BoardManagerController::class, 'get_Auth_BoardManager'])->middleware('auth:sanctum');
+Route::get('/admin-user', [AdminController::class, 'get_Auth_Admin'])->middleware('auth:sanctum');
+Route::get('/voter-user', [VoterController::class, 'get_Auth_Voters'])->middleware('auth:sanctum');
+Route::get('/pollingstationstaff-user', [PollingStationStaffController::class, 'get_Auth_PollingStationStaff'])->middleware('auth:sanctum');
 
 // Route::middleware('auth:sanctum')->group( function () {
 
     /** User End Point */
-Route::post('/logout', [AuthController::class, 'logout']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::post('/userregister', [AuthController::class, 'register']);
 Route::get('/user', [AuthController::class, 'getUser']);
 Route::put('/user/{id}', [AuthController::class, 'update']);
@@ -36,13 +41,14 @@ Route::patch('/user/status/{id}', [AuthController::class, 'toggleStatus']);
 /** Admin End Point */
 
 Route::get('/admin', [AdminController::class, 'index']);
+Route::get('/admin/{id}', [AdminController::class, 'show']);
 Route::post('/admin',[AdminController::class, 'store']);
 Route::put('/admin/{id}', [AdminController::class, 'update']);
 Route::delete('/admin/{id}', [AdminController::class, 'destroy']);
 
 /** Board Manager End Point */
 Route::get('/boardmanagers', [BoardManagerController::class, 'index']);
-Route::get('/boardmanagers/{id}', [BoardManagerController::class, 'update']);
+Route::get('/boardmanagers/{id}', [BoardManagerController::class, 'show']);
 Route::post('/boardmanagers',[BoardManagerController::class, 'store']);
 Route::put('/boardmanagers/{id}', [BoardManagerController::class, 'update']);
 Route::delete('/boardmanagers/{id}', [BoardManagerController::class, 'destroy']);
@@ -58,6 +64,7 @@ Route::delete('/constituencystaff/{id}', [ConstituencyStaffController::class, 'd
 
 /** Polling Station Staff End Point */
 Route::get('/pollingstationstaff', [PollingStationStaffController::class, 'index']);
+Route::get('/pollingstationstaff/{id}', [PollingStationStaffController::class, 'show']);
 Route::post('/pollingstationstaff',[PollingStationStaffController::class, 'store']);
 Route::put('/pollingstationstaff/{id}', [PollingStationStaffController::class, 'update']);
 Route::delete('/pollingstationstaff/{id}', [PollingStationStaffController::class, 'destroy']);
@@ -96,6 +103,7 @@ Route::patch('/party/status/{id}', [PartyController::class, 'partyStatus']);
 /** Candidate End Point */
 
 Route::get('/candidate', [CandidateController::class, 'index']);
+Route::get('/candidate/{id}', [CandidateController::class, 'show']);
 Route::post('/candidate',[CandidateController::class, 'store']);
 Route::put('/candidate/{id}', [CandidateController::class, 'update']);
 Route::delete('/candidate/{id}', [CandidateController::class, 'destroy']);
@@ -104,6 +112,7 @@ Route::delete('/candidate/{id}', [CandidateController::class, 'destroy']);
 /** Voter End Point */
 
 Route::get('/voter', [VoterController::class, 'index']);
+Route::get('/voter/{id}', [VoterController::class, 'show']);
 Route::post('/voter',[VoterController::class, 'store']);
 Route::put('/voter/{id}', [VoterController::class, 'update']);
 Route::delete('/voter/{id}', [VoterController::class, 'destroy']);

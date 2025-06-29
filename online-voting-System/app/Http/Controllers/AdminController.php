@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -29,7 +30,7 @@ class AdminController extends Controller
         'first_name' => 'required|string',
         'middle_name' => 'required|string',
         'last_name' => 'required|string',
-        'gender' => 'required|in:male,female',
+        'gender' => 'required|in:Male,Female',
         ]);
 
         $admin = Admin::create([
@@ -51,7 +52,11 @@ class AdminController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $admin = Admin::find($id);
+        return response()->json([
+            'message' =>  'this is the constituency staff you search for',
+            'data' => $admin,
+        ], 201);
     }
 
     /**
@@ -69,7 +74,7 @@ class AdminController extends Controller
             'first_name' => 'required|string',
             'middle_name' => 'nullable|string',
             'last_name' => 'required|string',
-            'gender' => 'required|in:male,female',
+            'gender' =>  'required|in:Male,Female',
         ]);
 
         $admin->update([
@@ -100,5 +105,22 @@ class AdminController extends Controller
         $admin->delete();
 
         return response()->json(['message' => 'deleted successfully.']);
+    }
+
+    /**
+     * get authenticated Admin
+     */
+    public function get_Auth_Admin()
+    {
+       $user = Auth::user(); // get base user
+        $admin = $user->admin; // assuming hasOne relation
+
+        return response()->json([
+            'message' => 'This is the constituency staff logged in',
+            'data' => [
+                'user' => $user,
+                'admin' => $admin,
+            ],
+        ]);
     }
 }

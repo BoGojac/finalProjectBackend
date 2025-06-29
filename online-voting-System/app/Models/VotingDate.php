@@ -11,6 +11,11 @@ class VotingDate extends Model
         'voting_date'
     ];
 
+
+    /**
+     * to set eloquent relation
+     */
+
     public function registrationTimeSpam(){
         return $this->hasMany(RegistrationTimeSpan::class);
     }
