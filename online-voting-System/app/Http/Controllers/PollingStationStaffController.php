@@ -104,12 +104,12 @@ class PollingStationStaffController extends Controller
     public function get_Auth_PollingStationStaff()
     {
         $user = Auth::user();
-        $pollingstationstaff = $user->Polling_station_staff;
+        $polling_station_staff = $user->polling_station_staff;
         return response()->json([
-            'message'=> 'this the constituency staff loged in',
+            'message'=> 'this the polling station staff loged in',
             'data'=> [
                 'user'=> $user,
-                'pollingstationstaff' => $pollingstationstaff,
+                'polling_station_staff' => $polling_station_staff,
             ],
         ]);
     }

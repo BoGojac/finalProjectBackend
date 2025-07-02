@@ -105,13 +105,13 @@ class ConstituencyStaffController extends Controller
     public function get_Auth_ConstituencyStaff()
     {
         $user = Auth::user(); // get base user
-        $constituencyStaff = $user->constituency_staffs;
+        $constituency_staff = $user->constituency_staff;
 
         return response()->json([
             'message' => 'This is the constituency staff logged in',
             'data' => [
                 'user' => $user,
-                'constituency_staff' => $constituencyStaff,
+                'constituency_staff' => $constituency_staff,
             ],
         ]);
     }

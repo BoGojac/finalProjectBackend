@@ -38,9 +38,8 @@ class VoterController extends Controller
         }
 
         // Format duration_of_residence if needed
-        if (isset($validated['residence_duration']) && isset($validated['residence_unit'])) {
-            $validated['duration_of_residence'] = $validated['residence_duration'] . ' ' . $validated['residence_unit'];
-        }
+       $validated['duration_of_residence'] = $validated['residence_duration'] . ' ' . $validated['residence_unit'];
+       $validated['registration_date'] = now()->format('m-d-Y');
 
         $validated['registration_date'] = now()->toDateString();
 
@@ -92,9 +91,7 @@ class VoterController extends Controller
             ], 422);
         }
 
-        if (isset($validated['residence_duration']) && isset($validated['residence_unit'])) {
-            $validated['duration_of_residence'] = $validated['residence_duration'] . ' ' . $validated['residence_unit'];
-        }
+       $validated['duration_of_residence'] = $validated['residence_duration'] . ' ' . $validated['residence_unit'];
 
         $voter->update($validated);
 
@@ -125,11 +122,15 @@ class VoterController extends Controller
      */
     public function get_Auth_Voters()
     {
-        $voter = Auth::user()->voter;
+        $user = Auth::user();
+        $voter = $user->voter;
 
         return response()->json([
             'message'=> 'Authenticated voter information',
-            'data'=> $voter,
+            'data'=> [
+                'user' => $user,
+                 'voter' => $voter,
+                ],
         ]);
     }
 
@@ -138,7 +139,7 @@ class VoterController extends Controller
      */
     protected function validateVoterRequest(Request $request): array
     {
-        return $request->validate([
+          $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'polling_station_id' => 'required|exists:polling_stations,id',
             'first_name' => 'required|string|max:255',
@@ -154,5 +155,22 @@ class VoterController extends Controller
             'home_number' => 'nullable|string|max:255',
             'voting_status' => 'in:pending,voted',
         ]);
+
+         // Custom duration rules
+        if ($validated['residence_unit'] === 'months' && $validated['residence_duration'] < 6) {
+            abort(response()->json([
+                'message' => 'Validation error',
+                'errors' => ['residence_duration' => ['Must be at least 6 months']]
+            ], 422));
+        }
+
+        if ($validated['residence_unit'] === 'years' && $validated['residence_duration'] < 1) {
+            abort(response()->json([
+                'message' => 'Validation error',
+                'errors' => ['residence_duration' => ['Must be at least 1 year']]
+            ], 422));
+        }
+
+        return $validated;
     }
 }

@@ -42,8 +42,7 @@ class CandidateController extends Controller
 
         $validated['duration_of_residence'] = $validated['residence_duration'] . ' ' . $validated['residence_unit'];
         $validated['registration_date'] = now()->format('m-d-Y');
-         // Add constituency_id from user
-        // $validated['constituency_id'] = $user->constituency_id;
+         
 
         $candidate = Candidate::create($validated);
 

@@ -40,18 +40,18 @@ class AuthController extends Controller
     {
         $users = User::with([
             'admin:id,user_id,first_name,middle_name,last_name,gender',
-            'board_managers:id,user_id,first_name,middle_name,last_name,gender',
-            'constituency_staffs:id,user_id,first_name,middle_name,last_name,gender',
-            'polling_station_staffs:id,user_id,first_name,middle_name,last_name,gender',
-            'candidates:id,user_id,first_name,middle_name,last_name,gender',
-            'voters:id,user_id,first_name,middle_name,last_name,gender',
+            'board_manager:id,user_id,first_name,middle_name,last_name,gender',
+            'constituency_staff:id,user_id,first_name,middle_name,last_name,gender',
+            'polling_station_staff:id,user_id,first_name,middle_name,last_name,gender',
+            'candidate:id,user_id,first_name,middle_name,last_name,gender',
+            'voter:id,user_id,first_name,middle_name,last_name,gender',
         ])->get()->map(function ($user) {
             $detail = $user->admin
-                ?: $user->board_managers
-                ?: $user->constituency_staffs
-                ?: $user->polling_station_staffs
-                ?: $user->candidates
-                ?: $user->voters;
+                ?: $user->board_manager
+                ?: $user->constituency_staff
+                ?: $user->polling_station_staff
+                ?: $user->candidate
+                ?: $user->voter;
 
             return [
                 'id' => $user->id,

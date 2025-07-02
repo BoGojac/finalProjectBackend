@@ -30,12 +30,15 @@ class Voter extends Model
     ];
 
     /**
-     * to set eloquent relation 
+     * to set eloquent relation
      */
     public function user(){
         return $this->belongsTo(User::class);
     }
 
-
+    public function pollingStation()
+    {
+        return $this->belongsTo(PollingStation::class);
+    }
 
 }

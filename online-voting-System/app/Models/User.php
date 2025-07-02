@@ -63,7 +63,7 @@ class User extends Authenticatable
         return $this->hasOne(BoardManager::class);
     }
 
-    public function constituency_staffs(){
+    public function constituency_staff(){
         return $this->hasOne(ConstituencyStaff::class);
     }
 
@@ -71,11 +71,11 @@ class User extends Authenticatable
         return $this->hasOne(PollingStationStaff::class);
     }
 
-    public function candidates(){
+    public function candidate(){
         return $this->hasOne(Candidate::class);
     }
 
-    public function voters(){
+    public function voter(){
         return $this->hasOne(Voter::class);
     }
 
