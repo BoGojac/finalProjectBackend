@@ -26,6 +26,7 @@ Route::get('/boardmanagers-user', [BoardManagerController::class, 'get_Auth_Boar
 Route::get('/admin-user', [AdminController::class, 'get_Auth_Admin'])->middleware('auth:sanctum');
 Route::get('/voter-user', [VoterController::class, 'get_Auth_Voters'])->middleware('auth:sanctum');
 Route::get('/pollingstationstaff-user', [PollingStationStaffController::class, 'get_Auth_PollingStationStaff'])->middleware('auth:sanctum');
+Route::get('/voter/candidates', [VoterController::class, 'getCandidatesInSameConstituency'])->middleware('auth:sanctum');
 
 // Route::middleware('auth:sanctum')->group( function () {
 

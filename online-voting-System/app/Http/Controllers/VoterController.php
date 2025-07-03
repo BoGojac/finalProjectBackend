@@ -6,6 +6,7 @@ use App\Models\Voter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Candidate;
 
 class VoterController extends Controller
 {
@@ -133,6 +134,35 @@ class VoterController extends Controller
                 ],
         ]);
     }
+
+    /**
+     * get candidate to dispaly for voting
+     */
+
+    public function getCandidatesInSameConstituency()
+    {
+        $authUser = Auth::user();
+        $voter = $authUser->voter;
+
+        if (!$voter || !$voter->pollingStation || !$voter->pollingStation->constituency_id) {
+            return response()->json(['message' => 'Invalid voter or missing polling station data'], 404);
+        }
+
+        $constituencyId = $voter->pollingStation->constituency_id;
+
+        $candidates = Candidate::with(['user:id,status', 'party'])
+            ->where('constituency_id', $constituencyId)
+            ->whereHas('user', function ($query) {
+                $query->where('status', 'active');
+            })
+            ->get();
+
+        return response()->json([
+            'message' => 'Candidates in the same constituency',
+            'candidates' => $candidates
+        ]);
+    }
+
 
     /**
      * Validation logic for voter requests.
