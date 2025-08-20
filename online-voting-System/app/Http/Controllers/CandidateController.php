@@ -6,17 +6,23 @@ use App\Models\Candidate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class CandidateController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $candidates = Candidate::with('user', 'party')->get();
-        return response()->json($candidates);
+        $candidates = Candidate::with(['user:id,voting_date_id,status', 'party'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10); // paginate 10 per page
+
+        return response()->json($candidates); // Laravel includes pagination metadata
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -41,9 +47,9 @@ class CandidateController extends Controller
         }
 
         $validated['duration_of_residence'] = $validated['residence_duration'] . ' ' . $validated['residence_unit'];
-        $validated['registration_date'] = now()->format('m-d-Y');
+        $validated['registration_date'] = now()->format('Y-m-d');
 
-        
+
         $candidate = Candidate::create($validated);
 
         return response()->json([
@@ -71,6 +77,10 @@ class CandidateController extends Controller
     /**
      * Update the specified resource in storage.
      */
+
+
+
+
     public function update(Request $request, string $id)
     {
         $candidate = Candidate::find($id);
@@ -88,7 +98,17 @@ class CandidateController extends Controller
             ], 422);
         }
 
+        if ($validated['candidate_type'] === 'individual') {
+             $validated['party_id'] = null;
+        }
+
+        // Handle image replacement
         if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($candidate->image && Storage::disk('public')->exists($candidate->image)) {
+                Storage::disk('public')->delete($candidate->image);
+            }
+
             $image = $request->file('image');
             $validated['original_image_name'] = $image->getClientOriginalName();
             $validated['image'] = $image->store('candidates', 'public');
@@ -103,6 +123,7 @@ class CandidateController extends Controller
             'data' => $candidate,
         ], 200);
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -136,45 +157,79 @@ class CandidateController extends Controller
         ]);
     }
 
+    /**
+     * get voting date title and constituency name
+     */
+
+     public function candidateUser(Request $request)
+    {
+        $userId = $request->user()->id;
+
+        $candidate = Candidate::with([
+            'constituency:id,name',
+             'user.voting_date:id,title'
+        ])->where('user_id', $userId)->first();
+
+        if (!$candidate) {
+            return response()->json(['message' => 'Candidate not found'], 404);
+        }
+
+        return response()->json([
+            'data' => [
+                'candidate' => $candidate,
+            ]
+        ]);
+    }
 
     /**
      * Common validation logic.
      */
+
+
     protected function validateCandidateRequest(Request $request): array
-    {
-        $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'party_id' => 'nullable|required_if:candidate_type,party|exists:parties,id',
-            'constituency_id' => 'required|exists:constituencies,id',
-            'first_name' => 'required|string|max:255',
-            'middle_name' => 'nullable|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'gender' => 'required|in:Male,Female',
-            'birth_date' => 'required|date',
-            'disability' => 'required|in:None,Visual,Hearing,Physical,Intellectual,Other',
-            'disability_type' => 'nullable|required_if:disability,Other|string|max:255',
-            'residence_duration' => 'required|numeric|min:0',
-            'residence_unit' => 'required|in:months,years',
-            'home_number' => 'nullable|string|max:255',
-            'image' => 'nullable|image|max:2048',
-            'candidate_type' => 'required|in:individual,party',
-        ]);
+{
+    $validator = Validator::make($request->all(), [
+        'user_id' => 'required|exists:users,id',
+        'party_id' => 'nullable|required_if:candidate_type,party|exists:parties,id',
+        'constituency_id' => 'required|exists:constituencies,id',
+        'first_name' => 'required|string|max:255',
+        'middle_name' => 'nullable|string|max:255',
+        'last_name' => 'required|string|max:255',
+        'gender' => 'required|in:Male,Female',
+        'birth_date' => 'required|date',
+        'disability' => 'required|in:None,Visual,Hearing,Physical,Intellectual,Other',
+        'disability_type' => 'nullable|required_if:disability,Other|string|max:255',
+        'residence_duration' => 'required|numeric|min:0',
+        'residence_unit' => 'required|in:months,years',
+        'home_number' => 'nullable|string|max:255',
+        'image' => 'nullable|image|max:2048',
+        'candidate_type' => 'required|in:individual,party',
+    ]);
 
-        // Custom duration rules
-        if ($validated['residence_unit'] === 'months' && $validated['residence_duration'] < 6) {
-            abort(response()->json([
-                'message' => 'Validation error',
-                'errors' => ['residence_duration' => ['Must be at least 6 months']]
-            ], 422));
+    $validator->after(function ($validator) use ($request) {
+        if ($request->residence_unit === 'months' && $request->residence_duration < 6) {
+            $validator->errors()->add('residence_duration', 'Residence_duration must be at least 6 months');
         }
-
-        if ($validated['residence_unit'] === 'years' && $validated['residence_duration'] < 1) {
-            abort(response()->json([
-                'message' => 'Validation error',
-                'errors' => ['residence_duration' => ['Must be at least 1 year']]
-            ], 422));
+        if ($request->residence_unit === 'years' && $request->residence_duration < 1) {
+            $validator->errors()->add('residence_duration', 'Residence_duration must be at least 1 year');
         }
+        if (isset($request->birth_date) && \Carbon\Carbon::parse($request->birth_date)->age < 21) {
+            $validator->errors()->add('birth_date', 'Candidate must be at least 21 years old');
+        }
+    });
 
-        return $validated;
+    if ($validator->fails()) {
+        $allErrors = $validator->errors()->all();
+        $firstErrorMessage = $allErrors[0] ?? 'Validation error';
+
+        abort(response()->json([
+            'message' => $firstErrorMessage,
+            'errors' => $validator->errors(),
+        ], 422));
     }
+
+    return $validator->validated();
+}
+
+
 }

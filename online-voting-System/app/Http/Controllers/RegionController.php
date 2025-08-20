@@ -12,7 +12,7 @@ class RegionController extends Controller
      */
     public function index()
     {
-        $region = Region::all();
+        $region = Region::orderBy('created_at', 'desc') ->paginate(10);
         return response()->json([
             'message' => 'here is the regions',
             'data' => $region

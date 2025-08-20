@@ -3,9 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\BoardManager;
+use App\Models\OverrideHistory;
+use App\Models\Constituency;
+use App\Models\PollingStation;
+use App\Models\Candidate;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use PhpParser\Node\Expr\Cast\String_;
 
 class BoardManagerController extends Controller
 {
@@ -125,4 +130,124 @@ class BoardManagerController extends Controller
             ],
         ]);
     }
+
+    /**
+     *  Voter Override Method
+     */
+
+     public function overrideVoting(Request $request)
+    {
+        $request->validate([
+            'voting_date_id' => 'required|exists:voting_dates,id',
+            'level' => 'required|in:entire,constituency,pollingstation',
+            'target_id' => 'nullable|integer'
+        ]);
+
+        $user = Auth::user(); // ✅ Authenticated user
+        $userId = $user->id;
+        $level = $request->level;
+        $targetId = $request->target_id;
+
+        if ($level === 'entire') {
+            foreach (Constituency::all() as $constituency) {
+                $constituency->update(['status' => 'inactive']);
+                $constituency->pollingStations()->update(['status' => 'inactive']);
+                Candidate::where('constituency_id', $constituency->id)->update(['status' => 'inactive']);
+            }
+
+            OverrideHistory::create([
+                'voting_date_id' => $request->voting_date_id,
+                'user_id' => $userId,
+                'override_level' => 'entire',
+            ]);
+
+            return response()->json(['message' => 'Voting overridden entirely.']);
+        }
+
+        if ($level === 'constituency') {
+            $constituency = Constituency::findOrFail($targetId);
+            $constituency->update(['status' => 'inactive']);
+            $constituency->pollingStations()->update(['status' => 'inactive']);
+            Candidate::where('constituency_id', $constituency->id)->update(['status' => 'inactive']);
+
+            OverrideHistory::create([
+                'voting_date_id' => $request->voting_date_id,
+                'user_id' => $userId,
+                'override_level' => 'constituency',
+                'constituency_id' => $targetId,
+            ]);
+
+            return response()->json(['message' => 'Voting overridden for selected constituency.']);
+        }
+
+        if ($level === 'pollingstation') {
+            $station = PollingStation::findOrFail($targetId);
+            $station->update(['status' => 'inactive']);
+
+            OverrideHistory::create([
+                'voting_date_id' => $request->voting_date_id,
+                'user_id' => $userId,
+                'override_level' => 'pollingstation',
+                'polling_station_id' => $targetId,
+            ]);
+
+            return response()->json(['message' => 'Voting overridden for selected polling station.']);
+        }
+    }
+
+    /**
+     *  Roll Back THe Override Vote
+     */
+    public function rollbackOverrideVoting(Request $request)
+    {
+        $request->validate([
+            'level' => 'required|in:entire,constituency,pollingstation',
+            'target_id' => 'nullable|integer',
+            'substitution_date' => 'required|date|after:today',
+        ]);
+
+        $user = Auth::user(); // ✅ Authenticated user
+        $userId = $user->id;
+        $level = $request->level;
+        $targetId = $request->target_id;
+        $substitutionDate = $request->substitution_date;
+
+        $query = OverrideHistory::where('override_level', $level)
+                                ->where('rollback_status', false);
+
+        if ($level === 'entire') {
+            foreach (Constituency::all() as $constituency) {
+                $constituency->update(['status' => 'active']);
+                $constituency->pollingStations()->update(['status' => 'active']);
+                Candidate::where('constituency_id', $constituency->id)->update(['status' => 'active']);
+            }
+        } elseif ($level === 'constituency') {
+            $constituency = Constituency::findOrFail($targetId);
+            $constituency->update(['status' => 'active']);
+            $constituency->pollingStations()->update(['status' => 'active']);
+            Candidate::where('constituency_id', $constituency->id)->update(['status' => 'active']);
+            $query->where('constituency_id', $targetId);
+        } elseif ($level === 'pollingstation') {
+            $station = PollingStation::findOrFail($targetId);
+            $station->update(['status' => 'active']);
+            $query->where('polling_station_id', $targetId);
+        }
+
+        $override = $query->latest()->first();
+
+        if (!$override) {
+            return response()->json(['message' => 'No override record found to rollback.'], 404);
+        }
+
+        $override->update([
+            'rollback_status' => true,
+            'rollback_user_id' => $userId,
+            'rollback_date' => now(),
+            'substitution_date' => $substitutionDate,
+        ]);
+
+        return response()->json(['message' => 'Rollback completed. Voting rescheduled.']);
+    }
+
+
 }

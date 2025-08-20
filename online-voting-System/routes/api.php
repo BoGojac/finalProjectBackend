@@ -13,6 +13,7 @@ use App\Http\Controllers\PollingStationController;
 use App\Http\Controllers\PollingStationStaffController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\RegistrationTimeSpanController;
+use App\Http\Controllers\VoteCountController;
 use App\Http\Controllers\VoterController;
 use App\Http\Controllers\VotingDateController;
 
@@ -27,6 +28,12 @@ Route::get('/admin-user', [AdminController::class, 'get_Auth_Admin'])->middlewar
 Route::get('/voter-user', [VoterController::class, 'get_Auth_Voters'])->middleware('auth:sanctum');
 Route::get('/pollingstationstaff-user', [PollingStationStaffController::class, 'get_Auth_PollingStationStaff'])->middleware('auth:sanctum');
 Route::get('/voter/candidates', [VoterController::class, 'getCandidatesInSameConstituency'])->middleware('auth:sanctum');
+Route::middleware('auth:sanctum')->post('/vote-counts', [VoteCountController::class, 'store']);
+Route::middleware('auth:sanctum')->get('/voter-user', [VoterController::class, 'voterUser']);
+Route::middleware('auth:sanctum')->get('/candidate-user', [CandidateController::class, 'candidateUser']);
+
+
+
 
 // Route::middleware('auth:sanctum')->group( function () {
 
@@ -36,6 +43,8 @@ Route::post('/userregister', [AuthController::class, 'register']);
 Route::get('/user', [AuthController::class, 'getUser']);
 Route::put('/user/{id}', [AuthController::class, 'update']);
 Route::patch('/user/status/{id}', [AuthController::class, 'toggleStatus']);
+Route::put('/user/password/{id}', [AuthController::class, 'updatePassword'])->middleware('auth:sanctum');
+
 
 
 
@@ -117,6 +126,8 @@ Route::get('/voter/{id}', [VoterController::class, 'show']);
 Route::post('/voter',[VoterController::class, 'store']);
 Route::put('/voter/{id}', [VoterController::class, 'update']);
 Route::delete('/voter/{id}', [VoterController::class, 'destroy']);
+Route::get('/voter/{id}/has-voted', [VoterController::class, 'hasVoted']);
+
 
 /** Voting Date End Point */
 Route::post('/voting-date', [VotingDateController::class, 'store']);
@@ -136,5 +147,7 @@ Route::delete('/registration-time-span/{id}', [RegistrationTimeSpanController::c
 
 /** Override End Point */
 Route::put('/voting/override', [BoardManagerController::class, 'overRideVoting']);
+
+
 
 // });

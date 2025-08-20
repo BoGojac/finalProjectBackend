@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class AuthController extends Controller
 {
@@ -36,8 +37,11 @@ class AuthController extends Controller
         ], 201);
     }
 
-    public function getUser()
+
+
+    public function getUser(Request $request)
     {
+        $perPage = $request->input('per_page', 10); // default to 10
         $users = User::with([
             'admin:id,user_id,first_name,middle_name,last_name,gender',
             'board_manager:id,user_id,first_name,middle_name,last_name,gender',
@@ -45,7 +49,10 @@ class AuthController extends Controller
             'polling_station_staff:id,user_id,first_name,middle_name,last_name,gender',
             'candidate:id,user_id,first_name,middle_name,last_name,gender',
             'voter:id,user_id,first_name,middle_name,last_name,gender',
-        ])->get()->map(function ($user) {
+        ])->orderByDesc('created_at')->paginate($perPage);
+
+        // Map results while keeping pagination
+        $users->getCollection()->transform(function ($user) {
             $detail = $user->admin
                 ?: $user->board_manager
                 ?: $user->constituency_staff
@@ -67,33 +74,52 @@ class AuthController extends Controller
             ];
         });
 
-        return response()->json([
-            'message' => 'Users retrieved successfully',
-            'data' => $users,
-        ]);
+        return response()->json($users);
     }
+
 
 
     public function login(Request $request){
-        $credentials = $request -> validate([
+        $credentials = $request->validate([
             'email' => 'required|email',
-            'password' =>'required',
-        ]);
-        if (! Auth::attempt($credentials)) {
-        return response()->json([
-            'message' => 'Invalid Credential'
-        ], 401);
-        }
-        /**@var User $user */
-        $user = Auth::user();
-        $token = $user->createToken('auth_token')->plainTextToken;
-        return response()->json([
-            'message'       => 'Login success',
-             'user' => $user,
-            'access_token'  => $token,
+            'password' => 'required',
         ]);
 
+        if (!Auth::attempt($credentials)) {
+            return response()->json([
+                'message' => 'Invalid Credential'
+            ], 401);
+        }
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        // Status check before issuing token
+        if ($user->status !== 'active') {
+            $role = strtolower(str_replace(' ', '', $user->role));
+
+            $message = match ($role) {
+                'voter' => 'Sorry, you can\'t login now. You have been deactivated. Please contact your polling station or higher officials.',
+                'candidate' => 'Sorry, you can\'t login now. You have been deactivated. Please contact your Constituency or higher officials.',
+                'admin', 'boardmanager', 'constituencystaff', 'pollingstationstaff' =>
+                    'Sorry, you can\'t login now. You have been deactivated. Please contact the System Admin.',
+                default => 'Account deactivated. Please contact support.'
+            };
+
+            return response()->json([
+                'message' => $message
+            ], 403); // Use 403 Forbidden
+        }
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Login success',
+            'user' => $user,
+            'access_token' => $token,
+        ]);
     }
+
 
     public function logout(Request $request)
     {
@@ -170,6 +196,29 @@ class AuthController extends Controller
             'message' => 'User status updated successfully.',
             'user' => $user
         ]);
+    }
+
+
+    public function updatePassword(Request $request,string $id)
+    {
+        $request->validate([
+            'current_password' => ['required'],
+            'new_password' => ['required', 'confirmed', 'min:8'],
+        ]);
+         /** @var \App\Models\User $user */
+           $user = User::find($id);
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'message' => 'The current password is incorrect.'
+            ], 422);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->new_password),
+        ]);
+
+        return response()->json(['message' => 'Password updated successfully.']);
     }
 
 }

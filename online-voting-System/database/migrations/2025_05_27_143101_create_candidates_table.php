@@ -25,7 +25,7 @@ return new class extends Migration
             $table->enum('disability', ['None', 'Visual', 'Hearing', 'Physical', 'Intellectual', 'Other'])->default('None');
             $table->string('disability_type')->nullable();
             $table->string('duration_of_residence');
-            $table->string('home_number')->nullable();
+            $table->string('home_number')->nullable(); 
             $table->string('image')->nullable();
             $table->string('original_image_name')->nullable();
             $table->enum('candidate_type', ['individual', 'party'])->default('individual'); // Added

@@ -15,12 +15,23 @@ class ConstituencyController extends Controller
      */
     public function index()
     {
-        $constituency = Constituency::all();
-        return response()->json([
-            'message' => 'here is the constituencies',
-            'data' => $constituency
-        ]);
+        try {
+            $constituencies = Constituency::with('region.voting_date')
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
+
+            return response()->json([
+                'message' => 'Constituencies with regions and voting dates',
+                'data' => $constituencies
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to fetch data',
+                'details' => $e->getMessage()
+            ], 500);
+        }
     }
+
 
 
     /**

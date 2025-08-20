@@ -13,15 +13,28 @@ class VoterController extends Controller
     /**
      * Display a listing of voters.
      */
-    public function index()
+   public function index(Request $request)
     {
-        $voters = Voter::with('user')->get();
+        $query = Voter::with('user');
+
+        if ($request->has('polling_station_id')) {
+            $query->where('polling_station_id', $request->polling_station_id);
+        }
+
+        if ($request->has('constituency_id')) {
+            $query->whereHas('pollingStation', function ($q) use ($request) {
+                $q->where('constituency_id', $request->constituency_id);
+            });
+        }
+
+        $voters = $query->orderBy('created_at', 'desc')->paginate(10);
 
         return response()->json([
-            'message' => 'List of all voters',
+            'message' => 'Filtered voters list',
             'data' => $voters
         ]);
     }
+
 
     /**
      * Store a newly created voter in storage.
@@ -135,6 +148,47 @@ class VoterController extends Controller
         ]);
     }
 
+     /**
+     * to check if the voter has voted or not
+     */
+
+     public function hasVoted($id)
+    {
+        $hasVoted = \App\Models\VoteCount::where('voter_id', $id)->exists();
+
+        return response()->json([
+            'has_voted' => $hasVoted,
+        ]);
+    }
+
+    /**
+     * voting date name a
+     */
+  public function voterUser(Request $request)
+    {
+        $user = $request->user();
+
+        $voter = $user->voter()
+            ->with([
+                'pollingStation:id,name',
+                 'user.voting_date:id,title',
+            ])
+            ->first();
+
+        if (!$voter) {
+            return response()->json([
+                'message' => 'Voter data not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'data' => [
+                'voter' => $voter
+            ]
+        ]);
+    }
+
+
     /**
      * get candidate to dispaly for voting
      */
@@ -150,7 +204,7 @@ class VoterController extends Controller
 
         $constituencyId = $voter->pollingStation->constituency_id;
 
-        $candidates = Candidate::with(['user:id,status', 'party'])
+        $candidates = Candidate::with(['user:id,voting_date_id,status', 'party'])
             ->where('constituency_id', $constituencyId)
             ->whereHas('user', function ($query) {
                 $query->where('status', 'active');

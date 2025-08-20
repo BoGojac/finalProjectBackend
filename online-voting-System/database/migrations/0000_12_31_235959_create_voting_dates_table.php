@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('voting_dates', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->dateTime('voting_date');
+            $table->date('voting_date');
             $table->timestamps();
         });
     }

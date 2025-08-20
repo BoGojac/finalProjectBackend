@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\RegistrationTimeSpan;
+use App\Models\VotingDate;
 use Illuminate\Http\Request;
 
 class RegistrationTimeSpanController extends Controller
@@ -10,9 +11,25 @@ class RegistrationTimeSpanController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $query = RegistrationTimeSpan::query();
+
+        // Filter by voting_date_id if provided
+        if ($request->has('voting_date_id')) {
+            $query->where('voting_date_id', $request->input('voting_date_id'));
+        }
+
+        // Eager load voting date relationship if requested
+        if ($request->has('include_dates') && $request->input('include_dates')) {
+            $query->with('votingDate');
+        }
+
+        $registrationPeriods = $query->get();
+
+        return response()->json([
+            'data' => $registrationPeriods
+        ]);
     }
 
     /**
@@ -27,7 +44,34 @@ class RegistrationTimeSpanController extends Controller
             'ending_date' => 'required|date|after_or_equal:beginning_date',
         ]);
 
-        // Check if a record already exists for the type + voting date
+        // Fetch the voting date
+        $votingDate = VotingDate::find($request->voting_date_id);
+        if (!$votingDate) {
+            return response()->json(['message' => 'Voting date not found.'], 404);
+        }
+
+        // Convert to Carbon for date comparisons
+        $endingDate = \Carbon\Carbon::parse($request->ending_date);
+        $votingDateCarbon = \Carbon\Carbon::parse($votingDate->date); // Assuming the column is `date`
+
+        // ✅ Ensure the registration ends before the voting date
+        if ($endingDate->gte($votingDateCarbon)) {
+            return response()->json([
+                'message' => 'Registration must end before the voting date.'
+            ], 422);
+        }
+
+        // ✅ If it's a candidate registration, ensure it ends at least 3 months before the voting date
+        if ($request->type === 'candidate') {
+            $minimumEndDate = $votingDateCarbon->copy()->subMonths(3);
+            if ($endingDate->gt($minimumEndDate)) {
+                return response()->json([
+                    'message' => 'Candidate registration must end at least 3 months before the voting date.'
+                ], 422);
+            }
+        }
+
+        // Prevent duplicate registration time spans for same voting_date + type
         $exists = RegistrationTimeSpan::where('voting_date_id', $request->voting_date_id)
             ->where('type', $request->type)
             ->exists();
@@ -38,6 +82,7 @@ class RegistrationTimeSpanController extends Controller
             ], 409);
         }
 
+        // Save the record
         $registrationTimeSpan = RegistrationTimeSpan::create($request->only([
             'voting_date_id',
             'type',
@@ -50,6 +95,7 @@ class RegistrationTimeSpanController extends Controller
             'data' => $registrationTimeSpan,
         ], 201);
     }
+
 
 
     /**

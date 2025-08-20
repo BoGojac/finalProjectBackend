@@ -13,7 +13,10 @@ class PartyController extends Controller
      */
     public function index()
     {
-        $parties = Party::with('region:id,name')->get()->map(function ($party) {
+        $parties = Party::with('region:id,name')->orderBy('created_at', 'desc')->paginate(10); // Use paginate instead of get()
+
+        // Transform paginated collection using map and keep pagination metadata
+        $parties->getCollection()->transform(function ($party) {
             return [
                 'id' => $party->id,
                 'name' => $party->name,
@@ -25,13 +28,14 @@ class PartyController extends Controller
                 'region_id' => $party->region_id,
                 'region_name' => optional($party->region)->name,
                 'status' => $party->status,
-                'original_image_name' => $party->original_image_name, // ✅ FIXED
+                'original_image_name' => $party->original_image_name,
+                'image' => $party->image, // 🔁 Important for rendering the image link
             ];
         });
 
         return response()->json([
-            'message' => 'here is the Parties',
-            'data' => $parties
+            'message' => 'Here are the parties',
+            'data' => $parties // Includes pagination meta
         ]);
     }
 
@@ -45,7 +49,7 @@ class PartyController extends Controller
             'name' => 'required|string',
             'abbrevation' => 'required|string',
             'leader' => 'required|string',
-            'foundation_year' => 'required|date',
+            'foundation_year' => 'required|date|before_or_equal:today',
             'headquarters' => 'required|string', // ✅ Add this
             'participation_area' => 'required|in:national,regional',
             'region_id' => 'string|exists:regions,id',
@@ -112,24 +116,46 @@ class PartyController extends Controller
         }
 
         $validated = $request->validate([
-                'name' => 'required|string',
-                'abbrivation' => 'required|string',
-                'leader' => 'required|string',
-                'foundation_year' => 'required|date',
-                'headquarters' => 'required|string',
-                'participation_area' => 'required|in:national,regional',
-                'region_id' => 'nullable|string|exists:regions,id',
-                'image' => 'nullable|image|max:2048',
-            ]);
+            'name' => 'required|string',
+            'abbrevation' => 'required|string',
+            'leader' => 'required|string',
+            'foundation_year' => 'required|date',
+            'headquarters' => 'required|string',
+            'participation_area' => 'required|in:national,regional',
+            'region_id' => 'nullable|string|exists:regions,id',
+            'image' => 'nullable|image|max:2048',
+        ]);
 
+        // Detect change of participation_area and adjust accordingly
+        if ($party->participation_area !== $validated['participation_area']) {
+            if ($validated['participation_area'] === 'regional') {
+                // Changing from national (or others) to regional
+                // Ensure region_id is provided
+                if (empty($validated['region_id'])) {
+                    return response()->json(['message' => 'Region ID is required when participation area is regional.'], 422);
+                }
+                // Participation area set to regional, region_id already validated
+            } elseif ($validated['participation_area'] === 'national') {
+                // Changing from regional to national
+                $validated['region_id'] = null;
+            }
+        } else {
+            // participation_area unchanged
+            // If not regional, clear region_id just in case
+            if ($validated['participation_area'] !== 'regional') {
+                $validated['region_id'] = null;
+            }
+        }
+
+        // Image upload logic (replace old if new one uploaded)
         if ($request->hasFile('image')) {
+            if ($party->image && Storage::disk('public')->exists($party->image)) {
+                Storage::disk('public')->delete($party->image);
+            }
+
             $image = $request->file('image');
             $validated['image'] = $image->store('parties', 'public');
             $validated['original_image_name'] = $image->getClientOriginalName();
-        }
-
-        if ($validated['participation_area'] !== 'regional') {
-            $validated['region_id'] = null;
         }
 
         $party->update($validated);
@@ -139,6 +165,7 @@ class PartyController extends Controller
             'data' => $party,
         ]);
     }
+
 
 
     /**

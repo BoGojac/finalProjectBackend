@@ -55,6 +55,9 @@ class User extends Authenticatable
      * to set eloquent relation
      */
 
+     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
     public function admin(){
         return $this->hasOne(Admin::class);
     }

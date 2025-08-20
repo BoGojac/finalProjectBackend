@@ -12,7 +12,7 @@ class PollingStationController extends Controller
      */
     public function index()
     {
-        $pollingStations = PollingStation::with('constituency.region')->get();
+        $pollingStations = PollingStation::with('constituency.region')->orderBy('created_at', 'desc') ->paginate(10);;
 
         $data = $pollingStations->map(function ($station) {
             return [
