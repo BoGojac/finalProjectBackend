@@ -42,9 +42,18 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::post('/userregister', [AuthController::class, 'register']);
 Route::get('/user', [AuthController::class, 'getUser']);
 Route::put('/user/{id}', [AuthController::class, 'update']);
+Route::get('/user/{id}', [AuthController::class, 'show']);
 Route::patch('/user/status/{id}', [AuthController::class, 'toggleStatus']);
 Route::put('/user/password/{id}', [AuthController::class, 'updatePassword'])->middleware('auth:sanctum');
 
+/**
+ *
+ */
+
+Route::get('/user/admin/{id}', [AuthController::class, 'get_admin']);
+Route::get('/user/boardmanagers/{id}', [AuthController::class, 'get_boardmanager']);
+Route::get('/user/constituencystaff/{id}', [AuthController::class, 'get_constituencystaff']);
+Route::get('/user/pollingstationstaff/{id}', [AuthController::class, 'get_pollingstationstaff']);
 
 
 

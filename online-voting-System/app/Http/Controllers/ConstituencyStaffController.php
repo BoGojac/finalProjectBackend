@@ -99,7 +99,16 @@ class ConstituencyStaffController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+         $constituencystaff = ConstituencyStaff::find($id);
+
+        if (!$constituencystaff) {
+            return response()->json(['message' => 'constituencystaff not found.'], 404);
+        }
+
+        // Delete the constituencystaff
+        $constituencystaff->delete();
+
+         return response()->json(['message' => 'constituencystaff deleted successfully.']);
     }
 
     public function get_Auth_ConstituencyStaff()

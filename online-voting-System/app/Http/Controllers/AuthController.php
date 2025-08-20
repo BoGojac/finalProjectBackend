@@ -78,7 +78,6 @@ class AuthController extends Controller
     }
 
 
-
     public function login(Request $request){
         $credentials = $request->validate([
             'email' => 'required|email',
@@ -138,6 +137,100 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Logout success',
+        ]);
+    }
+
+    public function show(Request $request, $id){
+
+        $user = User::find($id);
+
+          if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        return response()->json([
+            'message' => 'here is specific user',
+            'user' => $user
+        ]);
+    }
+
+    public function get_admin(Request $request, $id){
+
+        $user = User::find($id);
+
+        if(!$user){
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $admin = $user->admin;
+
+        if(!$admin){
+            return response()->json(['message' => 'Admin not found'], 404);
+        }
+
+        return response()->json([
+            'message' => 'here is specific admin user',
+            'data' => $admin
+        ]);
+    }
+
+    public function get_boardmanager(Request $request, $id){
+
+        $user = User::find($id);
+
+        if(!$user){
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $boardmanager = $user->boardmanager;
+
+        if(!$boardmanager){
+            return response()->json(['message' => 'BoardManager not found'], 404);
+        }
+
+        return response()->json([
+            'message' => 'here is specific boardmanager user',
+            'data' => $boardmanager
+        ]);
+    }
+
+    public function get_constituencystaff(Request $request, $id){
+
+        $user = User::find($id);
+
+        if(!$user){
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $conatituencystaff = $user->conatituencystaff;
+
+        if(!$conatituencystaff){
+            return response()->json(['message' => 'Constituency Staff not found'], 404);
+        }
+
+        return response()->json([
+            'message' => 'here is specific conatituencystaff user',
+            'data' => $conatituencystaff
+        ]);
+    }
+
+    public function get_pollingstationstaff(Request $request, $id){
+
+        $user = User::find($id);
+
+        if(!$user){
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $pollingstationstaff = $user->pollingstationstaff;
+
+        if(!$pollingstationstaff){
+            return response()->json(['message' => 'pollingstationstaff not found'], 404);
+        }
+
+        return response()->json([
+            'message' => 'here is specific pollingstationstaff user',
+            'data' => $pollingstationstaff
         ]);
     }
 

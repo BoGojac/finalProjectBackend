@@ -95,7 +95,16 @@ class PollingStationStaffController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $pollingstationstaff = PollingStationStaff::find($id);
+
+        if (!$pollingstationstaff) {
+            return response()->json(['message' => 'pollingstationstaff not found.'], 404);
+        }
+
+        // Delete the pollingstationstaff
+        $pollingstationstaff->delete();
+
+         return response()->json(['message' => 'pollingstationstaff deleted successfully.']);
     }
 
     /**

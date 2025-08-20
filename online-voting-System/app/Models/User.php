@@ -51,6 +51,8 @@ class User extends Authenticatable
         ];
     }
 
+    
+
     /**
      * to set eloquent relation
      */
