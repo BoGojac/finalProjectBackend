@@ -129,4 +129,11 @@ class PollingStationController extends Controller
             'pollingStation' => $pollingstation
         ]);
     }
+
+    public function getByConstituency($id)
+    {
+        $pollingStations = PollingStation::where('constituency_id', $id)->get();
+        return response()->json(['data' => $pollingStations]);
+    }
+
 }

@@ -209,14 +209,20 @@ class PartyController extends Controller
             return response()->json(['message' => 'Party not found.'], 404);
         }
 
-        $party->status = $request->status;
+        $newStatus = $request->status;
+
+        // Update party status
+        $party->status = $newStatus;
         $party->save();
 
-        // Update all related candidates
-        $party->candidates()->update(['status' => $request->status]);
+        // Update status of all users whose candidates belong to this party
+        $userIds = $party->candidates()->pluck('user_id'); // get user_ids of party candidates
+
+        \App\Models\User::whereIn('id', $userIds)
+            ->update(['status' => $newStatus]);
 
         return response()->json([
-            'message' => 'Party and related candidates status updated successfully.',
+            'message' => 'Party and related users status updated successfully.',
             'party' => $party
         ]);
     }

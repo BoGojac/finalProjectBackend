@@ -87,6 +87,8 @@ Route::get('/pollingstationstaff/{id}', [PollingStationStaffController::class, '
 Route::post('/pollingstationstaff',[PollingStationStaffController::class, 'store']);
 Route::put('/pollingstationstaff/{id}', [PollingStationStaffController::class, 'update']);
 Route::delete('/pollingstationstaff/{id}', [PollingStationStaffController::class, 'destroy']);
+Route::get('/constituency/{id}/pollingstations', [PollingStationController::class, 'getByConstituency']);
+
 
 /** Region End Point */
 Route::post('/regions', [RegionController::class, 'store']);

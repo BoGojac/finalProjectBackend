@@ -182,7 +182,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        $boardmanager = $user->boardmanager;
+        $boardmanager = $user->board_manager;
 
         if(!$boardmanager){
             return response()->json(['message' => 'BoardManager not found'], 404);
@@ -202,15 +202,15 @@ class AuthController extends Controller
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        $conatituencystaff = $user->conatituencystaff;
+          $constituencystaff = $user->constituency_staff;
 
-        if(!$conatituencystaff){
+        if(!$constituencystaff){
             return response()->json(['message' => 'Constituency Staff not found'], 404);
         }
 
         return response()->json([
-            'message' => 'here is specific conatituencystaff user',
-            'data' => $conatituencystaff
+            'message' => 'here is specific constituencystaff user',
+            'data' => $constituencystaff
         ]);
     }
 
@@ -222,7 +222,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        $pollingstationstaff = $user->pollingstationstaff;
+        $pollingstationstaff = $user->polling_station_staff;
 
         if(!$pollingstationstaff){
             return response()->json(['message' => 'pollingstationstaff not found'], 404);
@@ -252,19 +252,90 @@ class AuthController extends Controller
             'email' => 'required|email|unique:users,email,' . $id,
             'phone_number' => 'required|string',
             'username' => 'required|string|unique:users,username,' . $id,
+            'role' => 'required|string|in:Admin,Board Manager,Constituency Staff,Polling Station Staff,Voter,Candidate',
         ]);
 
+        $oldRole = $user->role;
+        $newRole = $request->role;
+
+        //  Prevent role change if user is Voter or Candidate
+        if (in_array($oldRole, ['Voter', 'Candidate']) && $oldRole !== $newRole) {
+            return response()->json([
+                'message' => "Users with role {$oldRole} cannot change their role."
+            ], 403);
+        }
+
+        // Update user table first
         $user->email = $request->email;
         $user->phone_number = $request->phone_number;
         $user->username = $request->username;
+
+        // Update role only if allowed
+        if ($oldRole !== $newRole) {
+            $user->role = $newRole;
+        }
         $user->save();
+
+        // Common profile data
+        $profileData = [
+            'first_name'   => $request->first_name,
+            'middle_name'  => $request->middle_name,
+            'last_name'    => $request->last_name,
+            'gender'       => $request->gender,
+        ];
+
+        // Delete from old role table if role changed
+        if ($oldRole !== $newRole) {
+            match ($oldRole) {
+                'Admin' => $user->admin()->delete(),
+                'Board Manager' => $user->board_manager()->delete(),
+                'Constituency Staff' => $user->constituency_staff()->delete(),
+                'Polling Station Staff' => $user->polling_station_staff()->delete(),
+                'Voter' => $user->voter()->delete(),
+                'Candidate' => $user->candidate()->delete(),
+                default => null,
+            };
+        }
+
+        // Insert/update in new role table
+        match ($newRole) {
+            'Admin' => $user->admin()->updateOrCreate(['user_id' => $user->id], $profileData),
+
+            'Board Manager' => $user->board_manager()->updateOrCreate(['user_id' => $user->id], $profileData),
+
+            'Constituency Staff' => $user->constituency_staff()->updateOrCreate(
+                ['user_id' => $user->id],
+                array_merge($profileData, [
+                    'constituency_id' => $request->constituency_id,
+                ])
+            ),
+
+            'Polling Station Staff' => $user->polling_station_staff()->updateOrCreate(
+                ['user_id' => $user->id],
+                array_merge($profileData, [
+                    'polling_station_id' => $request->polling_station_id,
+                ])
+            ),
+
+            'Voter' => $user->voter()->updateOrCreate(['user_id' => $user->id], $profileData),
+
+            'Candidate' => $user->candidate()->updateOrCreate(['user_id' => $user->id], $profileData),
+
+            default => null,
+        };
 
         return response()->json([
             'message' => 'User updated successfully',
-            'user' => $user
+            'user' => $user->fresh()->load([
+                'admin',
+                'board_manager',
+                'constituency_staff',
+                'polling_station_staff',
+                'candidate',
+                'voter'
+            ]),
         ]);
     }
-
 
 
 
