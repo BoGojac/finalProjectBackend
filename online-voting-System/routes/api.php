@@ -35,7 +35,7 @@ Route::middleware('auth:sanctum')->get('/candidate-user', [CandidateController::
 
 
 
-// Route::middleware('auth:sanctum')->group( function () {
+Route::middleware('auth:sanctum')->group( function () {
 
     /** User End Point */
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
@@ -161,4 +161,4 @@ Route::put('/voting/override', [BoardManagerController::class, 'overRideVoting']
 
 
 
-// });
+});
